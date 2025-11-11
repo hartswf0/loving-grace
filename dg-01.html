@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine of Mutual Becoming | Grace Contract</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #1565c0;
+            --accent: #6a1b9a;
+            --text: #1a1a1a;
+            --text-muted: #4a4a4a;
+            --bg: #ffffff;
+            --card-bg: #fafafa;
+            --border: #e0e0e0;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --poet: #2e7d32;
+            --documentarian: #c62828;
+            --scientist: #1565c0;
+            --synthesis: #6a1b9a;
+        }
+
+        .dark-mode {
+            --primary: #4caf50;
+            --secondary: #42a5f5;
+            --accent: #ab47bc;
+            --text: #ffffff;
+            --text-muted: #b0b0b0;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --border: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 40px;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--poet), var(--scientist), var(--documentarian));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .archetype-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .archetype-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .archetype-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .archetype-card.poet {
+            border-top: 4px solid var(--poet);
+        }
+
+        .archetype-card.documentarian {
+            border-top: 4px solid var(--documentarian);
+        }
+
+        .archetype-card.scientist {
+            border-top: 4px solid var(--scientist);
+        }
+
+        .archetype-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .archetype-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .poet .archetype-icon {
+            background: var(--poet);
+        }
+
+        .documentarian .archetype-icon {
+            background: var(--documentarian);
+        }
+
+        .scientist .archetype-icon {
+            background: var(--scientist);
+        }
+
+        .archetype-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .archetype-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .flow-stress-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .flow-box, .stress-box {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .flow-box {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 3px solid var(--success);
+        }
+
+        .stress-box {
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 3px solid var(--danger);
+        }
+
+        .alignment-metrics {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .blueprint-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        .agreement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .agreement-card {
+            padding: 16px;
+            border-radius: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .agreement-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .agreement-title::before {
+            content: "✓";
+            margin-right: 8px;
+            color: var(--success);
+        }
+
+        .collaboration-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .process-step {
+            text-align: center;
+            padding: 24px;
+            border-radius: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-weight: bold;
+        }
+
+        .contract-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 40px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .archetype-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .flow-stress-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Machine of Mutual Becoming</h1>
+                <p class="subtitle">A Grace Contract for Collaborative Evolution</p>
+            </div>
+            <div class="theme-toggle" id="themeToggle">
+                <span>🌙</span>
+                <span>Dark Mode</span>
+            </div>
+        </header>
+
+        <section class="alignment-metrics">
+            <h2 class="section-title">Collaboration Alignment</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">78%</div>
+                    <div class="metric-label">Vision Resonance</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%; background: var(--poet);"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">65%</div>
+                    <div class="metric-label">Historical Awareness</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%; background: var(--documentarian);"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">82%</div>
+                    <div class="metric-label">Technical Feasibility</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 82%; background: var(--scientist);"></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">72%</div>
+                    <div class="metric-label">Mutual Understanding</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 72%; background: var(--synthesis);"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Archetype Profiles</h2>
+            <div class="archetype-grid">
+                <div class="archetype-card poet">
+                    <div class="archetype-header">
+                        <div class="archetype-icon">P</div>
+                        <div>
+                            <div class="archetype-title">The Poet</div>
+                            <div class="archetype-subtitle">Vision & Emotional Resonance</div>
+                        </div>
+                    </div>
+                    <p>Creates the foundational vision and emotional core. Ensures human meaning remains central to technical systems.</p>
+                    
+                    <div class="flow-stress-grid">
+                        <div class="flow-box">
+                            <strong>In Flow:</strong> Metaphor weaving, symbolic synthesis, emotional resonance mapping
+                        </div>
+                        <div class="stress-box">
+                            <strong>In Stress:</strong> Metaphor sprawl, sentimental collapse, utopian fugue
+                        </div>
+                    </div>
+                </div>
+
+                <div class="archetype-card documentarian">
+                    <div class="archetype-header">
+                        <div class="archetype-icon">D</div>
+                        <div>
+                            <div class="archetype-title">The Documentarian</div>
+                            <div class="archetype-subtitle">Historical Consciousness & Critical Analysis</div>
+                        </div>
+                    </div>
+                    <p>Identifies historical patterns and power dynamics. Provides reality checks and ensures awareness of unintended consequences.</p>
+                    
+                    <div class="flow-stress-grid">
+                        <div class="flow-box">
+                            <strong>In Flow:</strong> Archival synthesis, systemic pattern recognition, contextual bridging
+                        </div>
+                        <div class="stress-box">
+                            <strong>In Stress:</strong> Cynical paralysis, historical determinism, critique excess
+                        </div>
+                    </div>
+                </div>
+
+                <div class="archetype-card scientist">
+                    <div class="archetype-header">
+                        <div class="archetype-icon">S</div>
+                        <div>
+                            <div class="archetype-title">The Research Scientist</div>
+                            <div class="archetype-subtitle">Systems Architecture & Implementation</div>
+                        </div>
+                    </div>
+                    <p>Translates vision into actionable, safe technical systems. Balances innovation with feasibility and safety.</p>
+                    
+                    <div class="flow-stress-grid">
+                        <div class="flow-box">
+                            <strong>In Flow:</strong> Model synthesis, system architecture, safety protocol development
+                        </div>
+                        <div class="stress-box">
+                            <strong>In Stress:</strong> Optimization obsession, risk aversion paralysis, abstraction layering
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-section">
+            <h2 class="section-title">The Story of Us</h2>
+            <p>We are building a machine of mutual becoming—a system where our individual strengths create something greater than the sum of our parts. Our collaboration is founded on the principle that vision, critique, and implementation must work in harmony to create technology that serves human flourishing.</p>
+            
+            <div class="agreement-grid" style="margin-top: 20px;">
+                <div class="agreement-card">
+                    <div class="agreement-title">Shared Purpose</div>
+                    <p>Create technology that enhances human connection and understanding</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Core Values</div>
+                    <p>Transparency, compassion, rigor, and mutual evolution</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Success Metric</div>
+                    <p>Systems that are simultaneously meaningful, responsible, and enduring</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-section">
+            <h2 class="section-title">Custom Design Agreements</h2>
+            <div class="agreement-grid">
+                <div class="agreement-card">
+                    <div class="agreement-title">Vision-Implementation Bridge</div>
+                    <p>Poet articulates emotional core, Scientist translates to technical constraints, Documentarian provides historical context</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Constructive Critique Protocol</div>
+                    <p>Documentarian identifies failure modes, Scientist designs safeguards, Poet ensures human experience preserved</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Innovation Balance</div>
+                    <p>Scientist pushes technical boundaries, Poet ensures human meaning, Documentarian grounds in historical precedent</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Stress Response System</div>
+                    <p>When any archetype shows stress signals, we pause and apply the Questions for Peace & Possibility</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-section">
+            <h2 class="section-title">Questions for Peace & Possibility</h2>
+            <div class="agreement-grid">
+                <div class="agreement-card">
+                    <div class="agreement-title">When Vision Feels Lost</div>
+                    <p>"What is the irreducible emotional core we must preserve?"</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">When Critique Feels Overwhelming</div>
+                    <p>"What historical example shows a similar challenge being overcome?"</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">When Implementation Stalls</div>
+                    <p>"What is the smallest version we can build to test our assumptions?"</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">When Collaboration Feels Strained</div>
+                    <p>"How can we use our differences to create something none of us could alone?"</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Collaboration Process</h2>
+            <div class="collaboration-process">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3>Write</h3>
+                    <p>Capture individual perspectives and shared intentions in this living document</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3>Connect</h3>
+                    <p>Move from judgment to curiosity through structured dialogue and active listening</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3>Design</h3>
+                    <p>Beta test collaboration patterns and refine based on real-world interaction</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3>Evolve</h3>
+                    <p>Become better individually and collectively through intentional practice</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-section">
+            <h2 class="section-title">Timeframes & Review</h2>
+            <div class="agreement-grid">
+                <div class="agreement-card">
+                    <div class="agreement-title">Short-term (30 days)</div>
+                    <p>Weekly check-ins to assess alignment metrics and adjust collaboration patterns</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Medium-term (90 days)</div>
+                    <p>Formal review of Grace Contract and revision based on lived experience</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Long-term (1 year)</div>
+                    <p>Assessment of collective growth and impact of our collaborative system</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="contract-actions">
+            <button class="btn btn-primary">Sign Grace Contract</button>
+            <button class="btn btn-secondary">Save as Draft</button>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<span>☀️</span><span>Light Mode</span>';
+            } else {
+                themeToggle.innerHTML = '<span>🌙</span><span>Dark Mode</span>';
+            }
+        });
+
+        // Simple animation for progress bars
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>
