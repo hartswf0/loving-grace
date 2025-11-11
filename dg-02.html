@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine of Mutual Becoming | Grace Contract</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* Base Neutrals (Blueprint of We) */
+            --bg: #fafafa;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            
+            /* Thinker Accents */
+            --accent-brautigan: #4ade80;
+            --accent-curtis: #ef4444;
+            --accent-amodei: #3b82f6;
+            --accent-synthesis: #8b5cf6;
+            
+            /* Current Mode (Dynamic) */
+            --accent-color: var(--accent-brautigan);
+            --accent-light: rgba(74, 222, 128, 0.1);
+            
+            /* Typography */
+            --font-poetic: 'Crimson Pro', serif;
+            --font-documentary: 'Inter', sans-serif;
+            --font-technical: 'JetBrains Mono', monospace;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            
+            --accent-brautigan: #22c55e;
+            --accent-curtis: #dc2626;
+            --accent-amodei: #2563eb;
+            --accent-synthesis: #7c3aed;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-documentary);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-md);
+        }
+
+        /* Header & Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg) 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: var(--space-xl);
+        }
+
+        .logo {
+            font-family: var(--font-poetic);
+            font-size: 2.5rem;
+            font-weight: 400;
+            background: linear-gradient(135deg, var(--accent-brautigan), var(--accent-amodei), var(--accent-curtis));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-family: var(--font-documentary);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: var(--space-xs);
+        }
+
+        .controls {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: var(--space-xs) var(--space-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: 0.9rem;
+        }
+
+        /* Mode Selector */
+        .mode-selector {
+            display: flex;
+            gap: var(--space-xs);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: var(--space-xs);
+        }
+
+        .mode-btn {
+            padding: var(--space-xs) var(--space-sm);
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-documentary);
+            font-weight: 500;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Psychometric Profile Cards */
+        .profile-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+        }
+
+        .profile-card.brautigan { --accent-color: var(--accent-brautigan); }
+        .profile-card.curtis { --accent-color: var(--accent-curtis); }
+        .profile-card.amodei { --accent-color: var(--accent-amodei); }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .profile-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--space-sm);
+            font-size: 1.5rem;
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .profile-info h3 {
+            font-family: var(--font-documentary);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .profile-info .subtitle {
+            font-size: 0.9rem;
+            margin-top: 0;
+        }
+
+        /* Axis Grid */
+        .axis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin: var(--space-md) 0;
+        }
+
+        .axis-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-xs);
+            border-radius: 6px;
+            background: var(--bg);
+        }
+
+        .axis-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .axis-score {
+            font-family: var(--font-technical);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .axis-score.high { color: var(--accent-brautigan); }
+        .axis-score.medium { color: var(--accent-amodei); }
+        .axis-score.low { color: var(--accent-curtis); }
+
+        /* Flow/Stress Grid */
+        .flow-stress-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .flow-box, .stress-box {
+            padding: var(--space-sm);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .flow-box {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid var(--accent-brautigan);
+        }
+
+        .stress-box {
+            background: rgba(220, 38, 38, 0.1);
+            border-left: 3px solid var(--accent-curtis);
+        }
+
+        /* Metrics Dashboard */
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: var(--space-md);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: var(--space-xs);
+            font-family: var(--font-technical);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: var(--space-sm);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Blueprint Sections */
+        .blueprint-section {
+            margin-bottom: var(--space-lg);
+        }
+
+        .section-title {
+            font-family: var(--font-documentary);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background: var(--accent-color);
+            margin-right: var(--space-sm);
+            border-radius: 2px;
+        }
+
+        .agreement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .agreement-card {
+            padding: var(--space-md);
+            border-radius: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .agreement-title {
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            display: flex;
+            align-items: center;
+            font-family: var(--font-documentary);
+        }
+
+        .agreement-title::before {
+            content: "✓";
+            margin-right: var(--space-xs);
+            color: var(--accent-brautigan);
+        }
+
+        /* Process Steps */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-xl) 0;
+        }
+
+        .process-step {
+            text-align: center;
+            padding: var(--space-lg);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-md);
+            font-weight: bold;
+            font-family: var(--font-technical);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            margin-top: var(--space-xl);
+        }
+
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-documentary);
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes meadow-breeze {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @keyframes archival-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; filter: grayscale(20%); }
+        }
+
+        @keyframes constitutional-slide {
+            0% { transform: translateX(-20px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .mode-brautigan .card {
+            animation: meadow-breeze 4s ease-in-out infinite;
+        }
+
+        .mode-curtis .card {
+            animation: archival-flicker 0.3s steps(2) infinite;
+        }
+
+        .mode-amodei .card {
+            animation: constitutional-slide 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="mode-brautigan">
+    <div class="container">
+        <header>
+            <div>
+                <h1 class="logo">Machine of Mutual Becoming</h1>
+                <p class="subtitle">A Grace Contract for Collaborative Evolution</p>
+            </div>
+            <div class="controls">
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="brautigan">Pastoral</button>
+                    <button class="mode-btn" data-mode="curtis">Critical</button>
+                    <button class="mode-btn" data-mode="amodei">Constitutional</button>
+                </div>
+                <div class="theme-toggle" id="themeToggle">
+                    <span>🌙</span>
+                    <span>Dark</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Metrics Dashboard -->
+        <section class="metrics-dashboard">
+            <div class="card">
+                <div class="metric-value">78%</div>
+                <div class="metric-label">Vision Resonance</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 78%; background: var(--accent-brautigan);"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="metric-value">65%</div>
+                <div class="metric-label">Historical Awareness</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%; background: var(--accent-curtis);"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="metric-value">82%</div>
+                <div class="metric-label">Technical Feasibility</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 82%; background: var(--accent-amodei);"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="metric-value">72%</div>
+                <div class="metric-label">Mutual Understanding</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 72%; background: var(--accent-synthesis);"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Psychometric Profiles -->
+        <section>
+            <h2 class="section-title">Archetype Profiles</h2>
+            <div class="main-grid">
+                <!-- Brautigan Profile -->
+                <div class="card profile-card brautigan">
+                    <div class="profile-header">
+                        <div class="profile-avatar">🌿</div>
+                        <div class="profile-info">
+                            <h3>Richard Brautigan</h3>
+                            <p class="subtitle">The Pastoral Integrator</p>
+                        </div>
+                    </div>
+                    
+                    <div class="axis-grid">
+                        <div class="axis-item">
+                            <span class="axis-label">Instinct</span>
+                            <span class="axis-score high">8/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Reason</span>
+                            <span class="axis-score low">3/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Ideas</span>
+                            <span class="axis-score high">9/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Ideology</span>
+                            <span class="axis-score low">2/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Heart</span>
+                            <span class="axis-score high">9/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Head</span>
+                            <span class="axis-score low">2/9</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-stress-grid">
+                        <div class="flow-box">
+                            <strong>In Flow:</strong> Gift-giving, iterative refrains, emotional resonance mapping
+                        </div>
+                        <div class="stress-box">
+                            <strong>In Stress:</strong> Metaphor sprawl, sentimental collapse, utopian fugue
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Curtis Profile -->
+                <div class="card profile-card curtis">
+                    <div class="profile-header">
+                        <div class="profile-avatar">🔍</div>
+                        <div class="profile-info">
+                            <h3>Adam Curtis</h3>
+                            <p class="subtitle">The Critical Shedder</p>
+                        </div>
+                    </div>
+                    
+                    <div class="axis-grid">
+                        <div class="axis-item">
+                            <span class="axis-label">Instinct</span>
+                            <span class="axis-score low">2/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Reason</span>
+                            <span class="axis-score high">8/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Ideas</span>
+                            <span class="axis-score low">3/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Ideology</span>
+                            <span class="axis-score high">9/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Heart</span>
+                            <span class="axis-score low">1/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Head</span>
+                            <span class="axis-score high">9/9</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-stress-grid">
+                        <div class="flow-box">
+                            <strong>In Flow:</strong> Archival montage, power-structure mapping, ideological deconstruction
+                        </div>
+                        <div class="stress-box">
+                            <strong>In Stress:</strong> Cynical paralysis, historical determinism, critique excess
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amodei Profile -->
+                <div class="card profile-card amodei">
+                    <div class="profile-header">
+                        <div class="profile-avatar">⚙️</div>
+                        <div class="profile-info">
+                            <h3>Dario Amodei</h3>
+                            <p class="subtitle">The Constitutional Ground</p>
+                        </div>
+                    </div>
+                    
+                    <div class="axis-grid">
+                        <div class="axis-item">
+                            <span class="axis-label">Instinct</span>
+                            <span class="axis-score low">3/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Reason</span>
+                            <span class="axis-score high">9/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Ideas</span>
+                            <span class="axis-score medium">5/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Ideology</span>
+                            <span class="axis-score high">8/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Heart</span>
+                            <span class="axis-score medium">4/9</span>
+                        </div>
+                        <div class="axis-item">
+                            <span class="axis-label">Head</span>
+                            <span class="axis-score high">9/9</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-stress-grid">
+                        <div class="flow-box">
+                            <strong>In Flow:</strong> Formal verification, constitutional constraints, scalable architecture
+                        </div>
+                        <div class="stress-box">
+                            <strong>In Stress:</strong> Optimization obsession, risk aversion paralysis, abstraction layering
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blueprint of Grace Sections -->
+        <section class="blueprint-section">
+            <h2 class="section-title">The Story of Us</h2>
+            <div class="card">
+                <p>We are building a machine of mutual becoming—a system where our individual strengths create something greater than the sum of our parts. Our collaboration is founded on the principle that vision, critique, and implementation must work in harmony to create technology that serves human flourishing.</p>
+                
+                <div class="agreement-grid" style="margin-top: var(--space-md);">
+                    <div class="agreement-card">
+                        <div class="agreement-title">Shared Purpose</div>
+                        <p>Create technology that enhances human connection and understanding</p>
+                    </div>
+                    <div class="agreement-card">
+                        <div class="agreement-title">Core Values</div>
+                        <p>Transparency, compassion, rigor, and mutual evolution</p>
+                    </div>
+                    <div class="agreement-card">
+                        <div class="agreement-title">Success Metric</div>
+                        <p>Systems that are simultaneously meaningful, responsible, and enduring</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-section">
+            <h2 class="section-title">Custom Design Agreements</h2>
+            <div class="agreement-grid">
+                <div class="agreement-card">
+                    <div class="agreement-title">Vision-Implementation Bridge</div>
+                    <p>Poet articulates emotional core, Scientist translates to technical constraints, Documentarian provides historical context</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Constructive Critique Protocol</div>
+                    <p>Documentarian identifies failure modes, Scientist designs safeguards, Poet ensures human experience preserved</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Innovation Balance</div>
+                    <p>Scientist pushes technical boundaries, Poet ensures human meaning, Documentarian grounds in historical precedent</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">Stress Response System</div>
+                    <p>When any archetype shows stress signals, we pause and apply the Questions for Peace & Possibility</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-section">
+            <h2 class="section-title">Questions for Peace & Possibility</h2>
+            <div class="agreement-grid">
+                <div class="agreement-card">
+                    <div class="agreement-title">When Vision Feels Lost</div>
+                    <p>"What is the irreducible emotional core we must preserve?"</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">When Critique Feels Overwhelming</div>
+                    <p>"What historical example shows a similar challenge being overcome?"</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">When Implementation Stalls</div>
+                    <p>"What is the smallest version we can build to test our assumptions?"</p>
+                </div>
+                <div class="agreement-card">
+                    <div class="agreement-title">When Collaboration Feels Strained</div>
+                    <p>"How can we use our differences to create something none of us could alone?"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Collaboration Process -->
+        <section>
+            <h2 class="section-title">Collaboration Process</h2>
+            <div class="process-steps">
+                <div class="card process-step">
+                    <div class="step-number">1</div>
+                    <h3>Write</h3>
+                    <p>Capture individual perspectives and shared intentions in this living document</p>
+                </div>
+                <div class="card process-step">
+                    <div class="step-number">2</div>
+                    <h3>Connect</h3>
+                    <p>Move from judgment to curiosity through structured dialogue and active listening</p>
+                </div>
+                <div class="card process-step">
+                    <div class="step-number">3</div>
+                    <h3>Design</h3>
+                    <p>Beta test collaboration patterns and refine based on real-world interaction</p>
+                </div>
+                <div class="card process-step">
+                    <div class="step-number">4</div>
+                    <h3>Evolve</h3>
+                    <p>Become better individually and collectively through intentional practice</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contract Actions -->
+        <div class="btn-group">
+            <button class="btn btn-primary">Sign Grace Contract</button>
+            <button class="btn btn-secondary">Save as Draft</button>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        class ThemeManager {
+            constructor() {
+                this.root = document.documentElement;
+                this.toggle = document.getElementById('themeToggle');
+                this.init();
+            }
+
+            init() {
+                // Check for saved preference or use system
+                const saved = localStorage.getItem('theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                
+                if (saved) {
+                    this.setTheme(saved);
+                    this.updateToggle(saved);
+                } else {
+                    this.setTheme(systemPrefersDark ? 'dark' : 'light');
+                    this.updateToggle(systemPrefersDark ? 'dark' : 'light');
+                }
+
+                // Listen to toggle
+                this.toggle.addEventListener('click', () => {
+                    const current = this.root.getAttribute('data-theme');
+                    const newTheme = current === 'dark' ? 'light' : 'dark';
+                    this.setTheme(newTheme);
+                    this.updateToggle(newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+
+                // Listen to system changes
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('theme')) {
+                        const newTheme = e.matches ? 'dark' : 'light';
+                        this.setTheme(newTheme);
+                        this.updateToggle(newTheme);
+                    }
+                });
+            }
+
+            setTheme(theme) {
+                this.root.setAttribute('data-theme', theme);
+            }
+
+            updateToggle(theme) {
+                if (theme === 'dark') {
+                    this.toggle.innerHTML = '<span>☀️</span><span>Light</span>';
+                } else {
+                    this.toggle.innerHTML = '<span>🌙</span><span>Dark</span>';
+                }
+            }
+        }
+
+        // Mode Management
+        class ModeManager {
+            constructor() {
+                this.root = document.body;
+                this.buttons = document.querySelectorAll('.mode-btn');
+                this.currentMode = 'brautigan';
+                this.init();
+            }
+
+            init() {
+                this.buttons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const mode = e.target.dataset.mode;
+                        this.setMode(mode);
+                    });
+                });
+            }
+
+            setMode(mode) {
+                this.currentMode = mode;
+                
+                // Update button states
+                this.buttons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.mode === mode);
+                });
+
+                // Update body class
+                this.root.className = `mode-${mode}`;
+
+                // Update accent color
+                this.updateAccentColor(mode);
+            }
+
+            updateAccentColor(mode) {
+                const accentMap = {
+                    brautigan: 'var(--accent-brautigan)',
+                    curtis: 'var(--accent-curtis)',
+                    amodei: 'var(--accent-amodei)'
+                };
+
+                document.documentElement.style.setProperty('--accent-color', accentMap[mode]);
+            }
+        }
+
+        // Progress Bar Animation
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 300);
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            new ThemeManager();
+            new ModeManager();
+            animateProgressBars();
+        });
+    </script>
+</body>
+</html>
