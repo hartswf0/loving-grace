@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Role Discovery Quiz</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .style-selector {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 5px;
+      z-index: 1000;
+    }
+
+    .style-btn {
+      padding: 8px 12px;
+      border: 2px solid currentColor;
+      background: transparent;
+      color: inherit;
+      font-family: inherit;
+      cursor: pointer;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .style-btn.active {
+      background: currentColor;
+      color: #000;
+    }
+
+    /* IBM Computer Style */
+    body.ibm {
+      background: #000;
+      color: #0f0;
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    body.ibm .container {
+      border: 4px double #0f0;
+      background: #001100;
+    }
+
+    body.ibm .option {
+      border: 2px solid #0f0;
+      background: #000;
+    }
+
+    body.ibm .option:hover {
+      background: #003300;
+      box-shadow: 0 0 10px #0f0;
+    }
+
+    body.ibm .btn {
+      border: 2px solid #0f0;
+      color: #0f0;
+      background: #000;
+    }
+
+    body.ibm .btn:hover {
+      background: #0f0;
+      color: #000;
+    }
+
+    /* Street Flyer Style */
+    body.flyer {
+      background: #fff;
+      color: #000;
+      text-shadow: none;
+    }
+
+    body.flyer .container {
+      border: 8px solid #000;
+      background: #ffeb3b;
+      box-shadow: 10px 10px 0 rgba(0,0,0,0.3);
+      transform: rotate(-1deg);
+    }
+
+    body.flyer .option {
+      border: 3px solid #000;
+      background: #fff;
+      font-weight: bold;
+    }
+
+    body.flyer .option:hover {
+      background: #000;
+      color: #ffeb3b;
+      transform: scale(1.02);
+    }
+
+    body.flyer .btn {
+      border: 3px solid #000;
+      color: #000;
+      background: #fff;
+      font-weight: bold;
+    }
+
+    body.flyer .btn:hover {
+      background: #000;
+      color: #ffeb3b;
+    }
+
+    body.flyer h1 {
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+
+    /* Mobile Phone Style */
+    body.mobile {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    body.mobile .container {
+      border: none;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    body.mobile .option {
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+    }
+
+    body.mobile .option:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    body.mobile .btn {
+      border: 2px solid #fff;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+      border-radius: 25px;
+    }
+
+    body.mobile .btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* TV Screen Style */
+    body.tv {
+      background: #1a1a2e;
+      color: #00d9ff;
+      text-shadow: 0 0 8px #00d9ff;
+    }
+
+    body.tv .container {
+      border: 20px solid #0f3460;
+      background: #16213e;
+      box-shadow: 
+        inset 0 0 50px rgba(0,217,255,0.1),
+        0 0 50px rgba(0,217,255,0.3);
+      border-radius: 10px;
+    }
+
+    body.tv .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.1) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(0,0,0,0.1) 3px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    body.tv .option {
+      border: 2px solid #00d9ff;
+      background: rgba(0,217,255,0.05);
+    }
+
+    body.tv .option:hover {
+      background: rgba(0,217,255,0.15);
+      box-shadow: 0 0 20px rgba(0,217,255,0.5);
+    }
+
+    body.tv .btn {
+      border: 2px solid #00d9ff;
+      color: #00d9ff;
+      background: rgba(0,217,255,0.05);
+    }
+
+    body.tv .btn:hover {
+      background: #00d9ff;
+      color: #1a1a2e;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 30px;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 30px;
+      opacity: 0.8;
+    }
+
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+
+    .progress-dot {
+      width: 12px;
+      height: 12px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+    }
+
+    .progress-dot.active {
+      background: currentColor;
+    }
+
+    .question {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+      min-height: 80px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .option {
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 16px;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .option:active {
+      transform: scale(0.98);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn:not(:disabled):active {
+      transform: scale(0.95);
+    }
+
+    .result {
+      text-align: center;
+    }
+
+    .result h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .result-desc {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .role-details {
+      text-align: left;
+      margin: 30px 0;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .role-details h3 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .role-details ul {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    .role-details li {
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 20px;
+      }
+      
+      .question {
+        font-size: 16px;
+      }
+      
+      .option {
+        padding: 15px;
+        font-size: 14px;
+      }
+
+      .style-selector {
+        top: 5px;
+        right: 5px;
+        flex-wrap: wrap;
+        max-width: 200px;
+      }
+
+      .style-btn {
+        padding: 6px 10px;
+        font-size: 10px;
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body class="ibm">
+  <div class="style-selector">
+    <button class="style-btn active" onclick="setStyle('ibm')">IBM</button>
+    <button class="style-btn" onclick="setStyle('flyer')">Flyer</button>
+    <button class="style-btn" onclick="setStyle('mobile')">Mobile</button>
+    <button class="style-btn" onclick="setStyle('tv')">TV</button>
+  </div>
+
+  <div class="container">
+    <div id="quiz-view">
+      <h1>PROJECT ROLE DISCOVERY</h1>
+      <div class="subtitle">Find Your Voice in the Machine</div>
+      
+      <div class="progress" id="progress"></div>
+      
+      <div class="question" id="question"></div>
+      
+      <div class="options" id="options"></div>
+      
+      <div class="controls">
+        <button class="btn" id="prevBtn" onclick="prevQuestion()" disabled>◄ Back</button>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Next ►</button>
+      </div>
+    </div>
+
+    <div id="result-view" class="result hidden">
+      <h2 id="resultTitle"></h2>
+      <div class="result-desc" id="resultDesc"></div>
+      <div class="role-details" id="roleDetails"></div>
+      <button class="btn" onclick="restart()">↻ Restart Quiz</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "A NEW AI SYSTEM IS PROPOSED. YOUR FIRST INSTINCT:",
+        options: [
+          { text: "Imagine how it could transform human connection and creativity", role: "poet" },
+          { text: "Research what happened when similar systems were tried before", role: "documentarian" },
+          { text: "Map out the technical architecture and safety constraints", role: "scientist" }
+        ]
+      },
+      {
+        q: "THE PROJECT TEAM IS STUCK. YOU NATURALLY:",
+        options: [
+          { text: "Reframe the problem through metaphor and new perspective", role: "poet" },
+          { text: "Examine why previous projects failed at this exact stage", role: "documentarian" },
+          { text: "Break down the blocker into testable components", role: "scientist" }
+        ]
+      },
+      {
+        q: "WHEN EVALUATING SUCCESS, YOU FOCUS ON:",
+        options: [
+          { text: "Whether humans feel more alive and connected", role: "poet" },
+          { text: "Whether power dynamics shifted as intended", role: "documentarian" },
+          { text: "Whether the system performs reliably within constraints", role: "scientist" }
+        ]
+      },
+      {
+        q: "SOMEONE PROPOSES A 'QUICK FIX'. YOU ASK:",
+        options: [
+          { text: "Does this preserve the soul of what we're building?", role: "poet" },
+          { text: "What incentives does this create long-term?", role: "documentarian" },
+          { text: "What are the edge cases and failure modes?", role: "scientist" }
+        ]
+      },
+      {
+        q: "THE IDEAL TEAM MEETING PRODUCES:",
+        options: [
+          { text: "A shared vision that excites everyone", role: "poet" },
+          { text: "Awareness of historical patterns we're repeating", role: "documentarian" },
+          { text: "A concrete roadmap with clear milestones", role: "scientist" }
+        ]
+      },
+      {
+        q: "YOU'RE MOST COMFORTABLE WITH:",
+        options: [
+          { text: "Ambiguity that holds multiple meanings", role: "poet" },
+          { text: "Complexity that reveals hidden connections", role: "documentarian" },
+          { text: "Precision that eliminates uncertainty", role: "scientist" }
+        ]
+      },
+      {
+        q: "WHEN EXPLAINING THE PROJECT, YOU EMPHASIZE:",
+        options: [
+          { text: "The feeling of what it could be like", role: "poet" },
+          { text: "The systems and power structures it addresses", role: "documentarian" },
+          { text: "How it works and why it's safe", role: "scientist" }
+        ]
+      },
+      {
+        q: "YOUR NIGHTMARE SCENARIO IS:",
+        options: [
+          { text: "Building something technically perfect but spiritually empty", role: "poet" },
+          { text: "Repeating the same mistakes with new technology", role: "documentarian" },
+          { text: "Deploying something that causes unforeseen harm", role: "scientist" }
+        ]
+      }
+    ];
+
+    const roles = {
+      poet: {
+        title: "THE POET",
+        subtitle: "Visionary & Ethos Architect",
+        desc: "You see beyond the technical to the human. Like Brautigan's cybernetic meadow, you understand that the most important questions are about meaning, connection, and what it feels like to be alive.",
+        details: `
+          <h3>YOUR SUPERPOWERS:</h3>
+          <ul>
+            <li>Creating metaphors that make the invisible visible</li>
+            <li>Maintaining focus on human experience and emotional truth</li>
+            <li>Recognizing patterns in chaos and beauty in systems</li>
+            <li>Preventing solutions from becoming soulless</li>
+          </ul>
+          
+          <h3>YOUR ROLE IN THE TEAM:</h3>
+          <ul>
+            <li>Establish the "why" that drives everything</li>
+            <li>Ensure technical decisions serve human flourishing</li>
+            <li>Transform critique into creative possibility</li>
+            <li>Hold the vision when others get lost in details</li>
+          </ul>
+          
+          <h3>YOU WORK BEST WITH:</h3>
+          <ul>
+            <li>Scientists who can ground your vision in reality</li>
+            <li>Documentarians who challenge naive optimism</li>
+            <li>Teams who understand that poetry is precision</li>
+          </ul>
+        `
+      },
+      documentarian: {
+        title: "THE DOCUMENTARIAN",
+        subtitle: "Critical Analyst & Historical Consciousness",
+        desc: "You are the team's memory and conscience. Like Curtis tracing power through time, you see the patterns others miss and ask the uncomfortable questions that prevent disaster.",
+        details: `
+          <h3>YOUR SUPERPOWERS:</h3>
+          <ul>
+            <li>Recognizing historical patterns before they repeat</li>
+            <li>Mapping invisible power structures and incentives</li>
+            <li>Connecting disparate events into coherent narratives</li>
+            <li>Maintaining healthy skepticism without cynicism</li>
+          </ul>
+          
+          <h3>YOUR ROLE IN THE TEAM:</h3>
+          <ul>
+            <li>Provide "what went wrong before" perspective</li>
+            <li>Identify unintended consequences early</li>
+            <li>Ensure awareness of social and political context</li>
+            <li>Challenge assumptions with evidence from history</li>
+          </ul>
+          
+          <h3>YOU WORK BEST WITH:</h3>
+          <ul>
+            <li>Poets who can transform your critique into vision</li>
+            <li>Scientists who can build safeguards for your warnings</li>
+            <li>Teams who value difficult truths over comfortable lies</li>
+          </ul>
+        `
+      },
+      scientist: {
+        title: "THE SCIENTIST",
+        subtitle: "Systems Architect & Implementation Strategist",
+        desc: "You translate dreams into reality. Like Amodei building safe AI systems, you understand that good intentions need rigorous thinking, and that real impact requires getting the details right.",
+        details: `
+          <h3>YOUR SUPERPOWERS:</h3>
+          <ul>
+            <li>Breaking complex visions into achievable steps</li>
+            <li>Identifying and mitigating technical risks</li>
+            <li>Building robust systems that work at scale</li>
+            <li>Balancing ambition with safety and feasibility</li>
+          </ul>
+          
+          <h3>YOUR ROLE IN THE TEAM:</h3>
+          <ul>
+            <li>Provide the "how" and "how safely"</li>
+            <li>Translate vision into technical specifications</li>
+            <li>Build iterative prototypes and measure results</li>
+            <li>Ensure systems are reliable and maintainable</li>
+          </ul>
+          
+          <h3>YOU WORK BEST WITH:</h3>
+          <ul>
+            <li>Poets who keep you focused on human impact</li>
+            <li>Documentarians who help you avoid known pitfalls</li>
+            <li>Teams who respect both rigor and creativity</li>
+          </ul>
+        `
+      }
+    };
+
+    let currentQ = 0;
+    let scores = { poet: 0, documentarian: 0, scientist: 0 };
+    let answers = [];
+
+    function setStyle(style) {
+      document.body.className = style;
+      document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      document.getElementById('question').textContent = q.q;
+      
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      
+      q.options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        div.textContent = `${String.fromCharCode(65 + i)}. ${opt.text}`;
+        div.onclick = () => selectOption(i);
+        if (answers[currentQ] === i) {
+          div.style.opacity = '0.5';
+        }
+        optionsDiv.appendChild(div);
+      });
+      
+      updateProgress();
+      updateButtons();
+    }
+
+    function updateProgress() {
+      const progressDiv = document.getElementById('progress');
+      progressDiv.innerHTML = '';
+      questions.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        if (i === currentQ) dot.classList.add('active');
+        if (answers[i] !== undefined) dot.style.opacity = '1';
+        progressDiv.appendChild(dot);
+      });
+    }
+
+    function updateButtons() {
+      document.getElementById('prevBtn').disabled = currentQ === 0;
+      document.getElementById('nextBtn').disabled = answers[currentQ] === undefined;
+    }
+
+    function selectOption(optIndex) {
+      const q = questions[currentQ];
+      const prevAnswer = answers[currentQ];
+      
+      if (prevAnswer !== undefined) {
+        const prevRole = q.options[prevAnswer].role;
+        scores[prevRole]--;
+      }
+      
+      answers[currentQ] = optIndex;
+      const role = q.options[optIndex].role;
+      scores[role]++;
+      
+      renderQuestion();
+      
+      if (currentQ < questions.length - 1) {
+        setTimeout(() => nextQuestion(), 300);
+      } else {
+        setTimeout(() => showResult(), 300);
+      }
+    }
+
+    function nextQuestion() {
+      if (answers[currentQ] !== undefined && currentQ < questions.length - 1) {
+        currentQ++;
+        renderQuestion();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQ > 0) {
+        currentQ--;
+        renderQuestion();
+      }
+    }
+
+    function showResult() {
+      const maxScore = Math.max(scores.poet, scores.documentarian, scores.scientist);
+      let resultRole;
+      
+      if (scores.poet === maxScore) resultRole = 'poet';
+      else if (scores.documentarian === maxScore) resultRole = 'documentarian';
+      else resultRole = 'scientist';
+      
+      const role = roles[resultRole];
+      
+      document.getElementById('resultTitle').textContent = role.title;
+      document.getElementById('resultDesc').textContent = role.desc;
+      document.getElementById('roleDetails').innerHTML = role.details;
+      
+      document.getElementById('quiz-view').classList.add('hidden');
+      document.getElementById('result-view').classList.remove('hidden');
+    }
+
+    function restart() {
+      currentQ = 0;
+      scores = { poet: 0, documentarian: 0, scientist: 0 };
+      answers = [];
+      
+      document.getElementById('quiz-view').classList.remove('hidden');
+      document.getElementById('result-view').classList.add('hidden');
+      
+      renderQuestion();
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
