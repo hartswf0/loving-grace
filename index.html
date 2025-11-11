@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Machines of Loving Grace: Presentation Mode</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #4a4a4a;
+            --border: #e0e0e0;
+            --card-bg: #fafafa;
+            --highlight-bg: #fff9c4;
+            
+            /* High-contrast thematic colors */
+            --brautigan: #2e7d32;
+            --curtis: #c62828;
+            --amodei: #1565c0;
+            --synthesis: #6a1b9a;
+            
+            --brautigan-light: #e8f5e9;
+            --curtis-light: #ffebee;
+            --amodei-light: #e3f2fd;
+            --synthesis-light: #f3e5f5;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #121212;
+                --text: #ffffff;
+                --text-muted: #b0b0b0;
+                --border: #333;
+                --card-bg: #1e1e1e;
+                --highlight-bg: #fff59d;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            font-size: 16px;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        .scroll-container {
+            display: flex;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+        }
+
+        .column {
+            min-width: 100vw;
+            width: 100vw;
+            height: 100vh;
+            border-right: 2px solid var(--border);
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            padding: 48px 64px;
+            position: relative;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .column-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-color);
+        }
+
+        .column-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+        }
+
+        .column[data-type="brautigan"] { --accent-color: var(--brautigan); --accent-light: var(--brautigan-light); }
+        .column[data-type="curtis"] { --accent-color: var(--curtis); --accent-light: var(--curtis-light); }
+        .column[data-type="amodei"] { --accent-color: var(--amodei); --accent-light: var(--amodei-light); }
+        .column[data-type="synthesis"] { --accent-color: var(--synthesis); --accent-light: var(--synthesis-light); }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .slide-subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            font-weight: 400;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+        }
+
+        .card-content {
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .keyword {
+            background: var(--highlight-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .quote-card {
+            background: var(--accent-light);
+            border-left: 5px solid var(--accent-color);
+            padding: 24px 32px;
+            margin: 24px 0;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .quote-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            font-size: 60px;
+            color: var(--accent-color);
+            opacity: 0.3;
+        }
+
+        .quote-attribution {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .hermeneutic-layers {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .layer {
+            padding: 20px;
+            background: var(--card-bg);
+            border-left: 5px solid var(--accent-color);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .layer .label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 8px;
+        }
+
+        .layer .content {
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .comparison-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .comparison-item h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .comparison-item p {
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .comparison-item strong {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .nav-dots {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-color);
+            transform: scale(1.3);
+        }
+
+        .nav-hint {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .image-stage {
+            width: 100%;
+            height: 300px;
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 24px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-prompt {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 16px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .keyword-inline {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .column {
+                padding: 32px 24px;
+            }
+            .slide-title {
+                font-size: 32px;
+            }
+            .quote-card {
+                font-size: 16px;
+                padding: 20px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Dots -->
+    <div class="nav-dots" id="navDots"></div>
+    <div class="nav-hint">Swipe or use arrow keys</div>
+
+    <div class="scroll-container" id="scrollContainer">
+        <!-- Slide 1: Brautigan -->
+        <div class="column" data-type="brautigan">
+            <div class="column-header">
+                <div class="column-title">1967 • Counterculture Poet</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Richard Brautigan</h1>
+            <p class="slide-subtitle">Utopian Vision from the Summer of Love</p>
+            
+            <div class="card">
+                <div class="card-title">Historical Context</div>
+                <div class="card-content">
+                    San Francisco, <span class="keyword">Summer of Love</span>. 1,500 free broadsides distributed in Haight-Ashbury. Anti-establishment, anti-Vietnam, pro-ecology. Technology meant <span class="keyword-inline">mainframes</span> and NASA. Influenced by Stewart Brand's <span class="keyword-inline">Whole Earth Catalog</span> and Norbert Wiener's <span class="keyword-inline">cybernetics</span>.
+                </div>
+            </div>
+
+            <div class="quote-card">
+                "I like to think (of a <span class="keyword">cybernetic meadow</span> where mammals and computers live together in <span class="keyword">mutually programming harmony</span> like pure water touching clear sky.)"
+                <div class="quote-attribution">— Richard Brautigan, 1967</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1,500</div>
+                    <div class="stat-label">Free Copies Printed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$0</div>
+                    <div class="stat-label">Price (Copyleft)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">The Vision</div>
+                <div class="card-content">
+                    Machines as <span class="keyword">benevolent partners</span> to nature. Technology eliminates labor, returns humanity to Eden. <span class="keyword-inline">Mutually programming harmony</span> = feedback loops as love, not control. Deer stroll past computers as flowers. This is <span class="keyword-inline">not prediction but prayer</span>: a wish for post-scarcity harmony.
+                </div>
+            </div>
+
+            <div class="hermeneutic-layers">
+                <div class="layer">
+                    <div class="label">Literal</div>
+                    <div class="content">Pastoral poem imagining mammals and computers coexisting. Nature and technology merge into a single ecosystem where machines watch over life with "loving grace."</div>
+                </div>
+                <div class="layer">
+                    <div class="label">Symbolic</div>
+                    <div class="content">Cybernetic meadow = liminal space where binary logic meets organic growth. Machines become gardeners, not masters. Counter-myth to industrial alienation.</div>
+                </div>
+                <div class="layer">
+                    <div class="label">Meta</div>
+                    <div class="content">Grace as nonduality: tantric fusion of opposites. "Loving grace" emerges when consciousness recognizes itself across substrates.</div>
+                </div>
+            </div>
+
+            <div class="image-stage">
+                <div class="barrel-label">[Image: Cybernetic Meadow]</div>
+                <div class="image-prompt">1960s meadow with deer grazing alongside glowing mainframe computers, pastoral utopianism, watercolor counterculture aesthetic</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Curtis -->
+        <div class="column" data-type="curtis">
+            <div class="column-header">
+                <div class="column-title">2011 • BBC Documentarian</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Adam Curtis</h1>
+            <p class="slide-subtitle">Technocratic Critique & Post-Mortem</p>
+            
+            <div class="card">
+                <div class="card-title">Historical Context</div>
+                <div class="card-content">
+                    Post-<span class="keyword">2008 financial crash</span>, Occupy movement, climate anxiety. BBC-funded investigative series. Uses archival montage to reveal how Brautigan's dream became <span class="keyword-inline">technocratic ideology</span>. Examines Silicon Valley's "Californian Ideology" and its collision with reality.
+                </div>
+            </div>
+
+            <div class="quote-card">
+                "By the late 1960s what had happened was that our modern idea of nature—the ecosystem—and <span class="keyword">cybernetic theories about computers had fused together</span>."
+                <div class="quote-attribution">— Adam Curtis, 2011</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1972</div>
+                    <div class="stat-label">Club of Rome Report</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">World3</div>
+                    <div class="stat-label">Forrester's Model</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">The Critique</div>
+                <div class="card-content">
+                    Brautigan's dream became <span class="keyword">World3 dashboard</span>: a system to manage, not live in. Cybernetic forest = <span class="keyword-inline">Panopticon</span>. "Loving grace" morphs into <span class="keyword-inline">neutral objectivity</span>—surveillance disguised as care. Grace corrupted into governance. Shows how utopian ideas are co-opted by power structures.
+                </div>
+            </div>
+
+            <div class="hermeneutic-layers">
+                <div class="layer">
+                    <div class="label">Literal</div>
+                    <div>Documentary tracing how 1960s dreams became 1970s technocratic control. Forrester's model turned meadow into dashboard—a system to manage, not live in.</div>
+                </div>
+                <div class="layer">
+                    <div class="label">Symbolic</div>
+                    <div>Cybernetic forest becomes Panopticon. Where Brautigan saw deer as flowers, Curtis sees data points. Machine's gaze as surveillance disguised as care.</div>
+                </div>
+                <div class="layer">
+                    <div class="label">Meta</div>
+                    <div>Grace corrupted into governance: spiritual longing captured by power. "Loving grace" is perfect administrator—caring by managing, watching by watching.</div>
+                </div>
+            </div>
+
+            <div class="image-stage">
+                <div class="barrel-label">[Image: World3 Dashboard]</div>
+                <div class="image-prompt">1970s mainframe room with global systems model, bureaucratic analysts, Orwellian aesthetic of technocratic control</div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Amodei -->
+        <div class="column" data-type="amodei">
+            <div class="column-header">
+                <div class="column-title">2024 • AI CEO & Scientist</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Dario Amodei</h1>
+            <p class="slide-subtitle">Engineering Roadmap to Grace</p>
+            
+            <div class="card">
+                <div class="card-title">Historical Context</div>
+                <div class="card-content">
+                    CEO of <span class="keyword">Anthropic</span>, former OpenAI VP. Post-ChatGPT boom, AGI mainstream, $100B+ AI investment. Essay published during <span class="keyword-inline">$40B valuation raise</span>. Dual audience: public and investors. Writing from inside the machine to prove it can be loving. AI safety researcher turned industry leader.
+                </div>
+            </div>
+
+            <div class="quote-card">
+                "I think most people are underestimating just how <span class="keyword">radical the upside of AI could be</span>, just as I think most people are underestimating how bad the risks could be."
+                <div class="quote-attribution">— Dario Amodei, 2024</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">2026</div>
+                    <div class="stat-label">AI Arrival Target</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10-100×</div>
+                    <div class="stat-label">Human Cognitive Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50-100</div>
+                    <div class="stat-label">Years Compressed</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">The Vision</div>
+                <div class="card-content">
+                    <span class="keyword">"Country of geniuses in a datacenter."</span> Five domains: biology, neuroscience, economic development, peace/governance, work/meaning. <span class="keyword-inline">Compresses a century into a decade</span>—if aligned properly. Grace is <span class="keyword-inline">conditional</span>, not automatic. Must be engineered through constitutional AI and safety research.
+                </div>
+            </div>
+
+            <div class="hermeneutic-layers">
+                <div class="layer">
+                    <div class="label">Literal</div>
+                    <div>Strategic manifesto arguing AI's upside is radically underestimated. Predicts powerful AI by 2026 could cure diseases, end mental illness, eliminate poverty—if properly aligned.</div>
+                </div>
+                <div class="layer">
+                    <div class="label">Symbolic</div>
+                    <div>Grace as alignment: Amodei weaponizes hope against fatalism. "Machines of loving grace" becomes engineering spec. The meadow is now a laboratory; the deer are data.</div>
+                </div>
+                <div class="layer">
+                    <div class="label">Meta</div>
+                    <div>Eschatology as tech roadmap: "Compressed 21st century" is kairos—sacred time folding into itself. Braids three threads: Brautigan's longing, Curtis's warning, Enlightenment faith.</div>
+                </div>
+            </div>
+
+            <div class="image-stage">
+                <div class="barrel-label">[Image: Compressed Progress]</div>
+                <div class="image-prompt">AI neural network accelerating biological research, DNA helixes spinning at impossible speed, "country of geniuses in a datacenter"</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Synthesis -->
+        <div class="column" data-type="synthesis">
+            <div class="column-header">
+                <div class="column-title">Meta-Analysis • 57-Year Arc</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">The Triptych</h1>
+            <p class="slide-subtitle">From Prayer → Critique → Roadmap</p>
+            
+            <div class="card">
+                <div class="card-title">The Rorschach Test</div>
+                <div class="card-content">
+                    The phrase <span class="keyword">"machines of loving grace"</span> reveals how the same longing mutates across eras. Each iteration responds to its moment: Brautigan's <span class="keyword-inline">Summer of Love</span>, Curtis's <span class="keyword-inline">post-crash disillusionment</span>, Amodei's <span class="keyword-inline">AI acceleration</span>. The core question: Can intelligence become care without becoming control?
+                </div>
+            </div>
+
+            <div class="comparison-table">
+                <div class="comparison-item">
+                    <h4>Grace</h4>
+                    <p><strong>Brautigan:</strong> Given, natural, effortless</p>
+                    <p><strong>Curtis:</strong> Corrupted into control</p>
+                    <p><strong>Amodei:</strong> Engineered, conditional</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>Machine</h4>
+                    <p><strong>Brautigan:</strong> Gardener, companion</p>
+                    <p><strong>Curtis:</strong> Manager, system</p>
+                    <p><strong>Amodei:</strong> Genius, partner</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>Time</h4>
+                    <p><strong>Brautigan:</strong> Eternal present</p>
+                    <p><strong>Curtis:</strong> Historical loop</p>
+                    <p><strong>Amodei:</strong> Compressed future</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>Politics</h4>
+                    <p><strong>Brautigan:</strong> Transcended</p>
+                    <p><strong>Curtis:</strong> Replaced by system</p>
+                    <p><strong>Amodei:</strong> Democratized through AI</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">The Convergence</div>
+                <div class="card-content">
+                    <strong>Shared Ethical Impulse:</strong> All three believe technology should serve humanity's well-being. None advocate dystopia.<br><br>
+                    <strong>Key Divergence:</strong> Brautigan's <span class="keyword">total trust</span> vs. Curtis's <span class="keyword">deep mistrust</span> vs. Amodei's <span class="keyword">conditional trust</span>.<br><br>
+                    <strong>Lesson:</strong> To achieve graceful machines, we must understand context (Brautigan), be aware of ideology (Curtis), and actively shape tools toward compassion (Amodei).
+                </div>
+            </div>
+
+            <div class="image-stage">
+                <div class="barrel-label">[Image: Recursive Loop]</div>
+                <div class="image-prompt">Three mirrors reflecting infinitely: pastoral meadow, bureaucratic office, futuristic AI lab. Fractal recursion showing phrase's evolution from poem to critique to roadmap</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate navigation dots
+        const container = document.getElementById('scrollContainer');
+        const dotsContainer = document.getElementById('navDots');
+        const columns = document.querySelectorAll('.column');
+        
+        columns.forEach((col, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot';
+            if (i === 0) dot.classList.add('active');
+            dot.onclick = () => col.scrollIntoView({ behavior: 'smooth' });
+            dotsContainer.appendChild(dot);
+        });
+
+        // Update active dot on scroll
+        container.addEventListener('scroll', () => {
+            const scrollLeft = container.scrollLeft;
+            const width = container.clientWidth;
+            const activeIndex = Math.round(scrollLeft / width);
+            document.querySelectorAll('.nav-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === activeIndex);
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', e => {
+            const width = container.clientWidth;
+            if (e.key === 'ArrowRight') container.scrollBy({ left: width, behavior: 'smooth' });
+            if (e.key === 'ArrowLeft') container.scrollBy({ left: -width, behavior: 'smooth' });
+        });
+
+        // Touch swipe
+        let startX = null;
+        container.addEventListener('touchstart', e => startX = e.touches[0].clientX, { passive: true });
+        container.addEventListener('touchend', e => {
+            if (!startX) return;
+            const diff = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                const width = container.clientWidth;
+                container.scrollBy({ left: diff > 0 ? width : -width, behavior: 'smooth' });
+            }
+            startX = null;
+        }, { passive: true });
+    </script>
+</body>
+</html>
