@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blueprint of We - Collaboration Process</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2b6cb0;
+      --secondary: #4299e1;
+      --accent: #f6ad55;
+      --bg-main: #f7fafc;
+      --bg-card: #ffffff;
+      --text-primary: #2d3748;
+      --text-secondary: #4a5568;
+      --border: #e2e8f0;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --primary: #4299e1;
+      --secondary: #63b3ed;
+      --accent: #f6ad55;
+      --bg-main: #1a202c;
+      --bg-card: #2d3748;
+      --text-primary: #f7fafc;
+      --text-secondary: #e2e8f0;
+      --border: #4a5568;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 60px;
+      height: 30px;
+      background: var(--border);
+      border-radius: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      border: 2px solid var(--primary);
+    }
+
+    .theme-toggle-circle {
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    [data-theme="dark"] .theme-toggle-circle {
+      transform: translateX(30px);
+    }
+
+    .container {
+      max-width: 700px;
+      width: 100%;
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px var(--shadow);
+      border: 2px solid var(--border);
+      position: relative;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+      background: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 15px;
+      height: 15px;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 35px;
+    }
+
+    .phase-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .phase-indicator::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .phase {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .phase-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 3px solid var(--border);
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+
+    .phase.active .phase-circle {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .phase.completed .phase-circle {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    .phase-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-bottom: 35px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.4s ease;
+      border-radius: 4px;
+    }
+
+    .question-card {
+      background: var(--bg-main);
+      border: 2px solid var(--border);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .question-number {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .question {
+      font-size: 20px;
+      line-height: 1.6;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .option {
+      padding: 20px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.2s ease;
+    }
+
+    .option:hover {
+      border-color: var(--primary);
+      transform: translateX(5px);
+    }
+
+    .option:hover::before {
+      transform: scaleY(1);
+    }
+
+    .option.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    .option.selected::before {
+      transform: scaleY(1);
+      background: var(--accent);
+    }
+
+    .option-label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .option-text {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid var(--primary);
+      background: var(--primary);
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--primary);
+      color: white;
+    }
+
+    .result {
+      text-align: center;
+    }
+
+    .result-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+      box-shadow: 0 10px 30px var(--shadow);
+    }
+
+    .result h2 {
+      font-size: 32px;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .result-subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    .result-desc {
+      font-size: 17px;
+      line-height: 1.8;
+      margin-bottom: 35px;
+      color: var(--text-primary);
+      padding: 25px;
+      background: var(--bg-main);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .score-breakdown {
+      display: flex;
+      gap: 15px;
+      margin: 35px 0;
+      flex-wrap: wrap;
+    }
+
+    .score-item {
+      flex: 1;
+      min-width: 150px;
+      padding: 20px;
+      background: var(--bg-main);
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      text-align: center;
+    }
+
+    .score-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .score-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .score-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    .role-details {
+      text-align: left;
+      margin: 35px 0;
+    }
+
+    .role-section {
+      margin-bottom: 25px;
+      padding: 25px;
+      background: var(--bg-main);
+      border-radius: 12px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .role-section h3 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .role-section h3::before {
+      content: '◆';
+      color: var(--accent);
+    }
+
+    .role-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .role-section li {
+      padding: 10px 0;
+      padding-left: 25px;
+      position: relative;
+      line-height: 1.6;
+      color: var(--text-primary);
+    }
+
+    .role-section li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .collaboration-note {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 25px;
+      border-radius: 12px;
+      margin-top: 30px;
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .question {
+        font-size: 18px;
+      }
+      
+      .phase-label {
+        font-size: 9px;
+      }
+
+      .score-breakdown {
+        flex-direction: column;
+      }
+
+      .score-item {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <div class="theme-toggle-circle">☀️</div>
+  </div>
+
+  <div class="container">
+    <div id="quiz-view">
+      <div class="logo">
+        <div class="logo-icon">We</div>
+        <h1>The Blueprint of We</h1>
+        <div class="subtitle">A Collaboration Design Document</div>
+      </div>
+
+      <div class="phase-indicator">
+        <div class="phase" data-phase="write">
+          <div class="phase-circle">✎</div>
+          <div class="phase-label">Write</div>
+        </div>
+        <div class="phase" data-phase="connect">
+          <div class="phase-circle">⚡</div>
+          <div class="phase-label">Connect</div>
+        </div>
+        <div class="phase" data-phase="design">
+          <div class="phase-circle">⚙</div>
+          <div class="phase-label">Design</div>
+        </div>
+        <div class="phase" data-phase="evolve">
+          <div class="phase-circle">↑</div>
+          <div class="phase-label">Evolve</div>
+        </div>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      
+      <div class="question-card">
+        <div class="question-number" id="questionNumber"></div>
+        <div class="question" id="question"></div>
+      </div>
+      
+      <div class="options" id="options"></div>
+      
+      <div class="controls">
+        <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>← Previous</button>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Continue →</button>
+      </div>
+    </div>
+
+    <div id="result-view" class="result hidden">
+      <div class="result-icon" id="resultIcon"></div>
+      <h2 id="resultTitle"></h2>
+      <div class="result-subtitle" id="resultSubtitle"></div>
+      <div class="result-desc" id="resultDesc"></div>
+      
+      <div class="score-breakdown" id="scoreBreakdown"></div>
+      
+      <div class="role-details" id="roleDetails"></div>
+      
+      <div class="collaboration-note">
+        <strong>Remember:</strong> All three roles are essential for healthy collaboration. 
+        This assessment shows your natural orientation, but the most powerful teams 
+        integrate all three perspectives—vision, critique, and implementation—working 
+        together to create machines of loving grace.
+      </div>
+      
+      <button class="btn" onclick="restart()" style="margin-top: 30px; width: 100%;">↻ Restart Assessment</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        phase: 'write',
+        q: "When approaching a new collaboration, you first want to clarify:",
+        options: [
+          { text: "The deeper purpose and vision—what we're really trying to create together", role: "poet" },
+          { text: "The historical context—what patterns from past projects should inform us", role: "documentarian" },
+          { text: "The concrete deliverables—what specifically we'll build and how", role: "scientist" }
+        ]
+      },
+      {
+        phase: 'write',
+        q: "In describing your qualities and skills, you emphasize:",
+        options: [
+          { text: "Your ability to see connections, possibilities, and inspire others", role: "poet" },
+          { text: "Your capacity to recognize patterns, critique systems, and learn from history", role: "documentarian" },
+          { text: "Your competence in building reliable systems and solving technical problems", role: "scientist" }
+        ]
+      },
+      {
+        phase: 'connect',
+        q: "When you're 'in flow' with a team, you're most energized by:",
+        options: [
+          { text: "Co-creating a compelling vision that moves everyone", role: "poet" },
+          { text: "Uncovering hidden dynamics and bringing awareness to blind spots", role: "documentarian" },
+          { text: "Making tangible progress on well-defined problems", role: "scientist" }
+        ]
+      },
+      {
+        phase: 'connect',
+        q: "Under stress, your interaction style shifts toward:",
+        options: [
+          { text: "Retreating to protect the vision from compromise", role: "poet" },
+          { text: "Becoming more critical and highlighting what could go wrong", role: "documentarian" },
+          { text: "Focusing on control and perfecting the technical details", role: "scientist" }
+        ]
+      },
+      {
+        phase: 'design',
+        q: "When custom designing how the collaboration will work, you prioritize:",
+        options: [
+          { text: "Agreements about values, meaning, and what success feels like", role: "poet" },
+          { text: "Awareness of power dynamics and how decisions actually get made", role: "documentarian" },
+          { text: "Clear protocols, milestones, and measurable outcomes", role: "scientist" }
+        ]
+      },
+      {
+        phase: 'design',
+        q: "The biggest risk in a project, in your view, is:",
+        options: [
+          { text: "Losing sight of why we're doing this and building something soulless", role: "poet" },
+          { text: "Repeating historical mistakes and creating harmful unintended consequences", role: "documentarian" },
+          { text: "Technical failure or creating something that doesn't work reliably", role: "scientist" }
+        ]
+      },
+      {
+        phase: 'evolve',
+        q: "When it's time to reflect and improve, you focus on:",
+        options: [
+          { text: "Whether we stayed true to our values and created meaningful impact", role: "poet" },
+          { text: "What patterns emerged that we didn't expect and what we should learn", role: "documentarian" },
+          { text: "What metrics improved and what technical lessons we can apply next time", role: "scientist" }
+        ]
+      },
+      {
+        phase: 'evolve',
+        q: "Your natural gift to the team is asking:",
+        options: [
+          { text: "'What does this mean for human flourishing and connection?'", role: "poet" },
+          { text: "'What happened before when others tried this?'", role: "documentarian" },
+          { text: "'How do we actually build this safely and reliably?'", role: "scientist" }
+        ]
+      }
+    ];
+
+    const roles = {
+      poet: {
+        title: "The Poet",
+        subtitle: "Visionary & Ethos Architect",
+        icon: "✧",
+        desc: "You are the keeper of meaning in the collaboration. Like Brautigan's vision of a cybernetic meadow where technology and nature coexist in harmony, you see beyond the technical to the essentially human. You understand that the most important questions are about purpose, connection, and what it means to be alive together.",
+        details: [
+          {
+            title: "Your Superpowers",
+            items: [
+              "Creating metaphors that make complex visions tangible and emotionally resonant",
+              "Holding space for possibility even when others focus on constraints",
+              "Recognizing when technical solutions lose their human center",
+              "Inspiring teams by connecting work to deeper purpose and values"
+            ]
+          },
+          {
+            title: "Your Role in Collaboration",
+            items: [
+              "Establish the 'why' that guides all decisions and keeps the team aligned",
+              "Translate between emotional/human needs and technical requirements",
+              "Notice when the group loses its way and help return to core purpose",
+              "Ensure the final creation serves human flourishing, not just efficiency"
+            ]
+          },
+          {
+            title: "How You Co-Create",
+            items: [
+              "Partner with Scientists to ground vision in feasible implementation",
+              "Work with Documentarians to ensure vision accounts for historical wisdom",
+              "Transform critique into creative challenge rather than obstacle",
+              "Hold the tension between ideal and real with grace"
+            ]
+          }
+        ]
+      },
+      documentarian: {
+        title: "The Documentarian",
+        subtitle: "Critical Analyst & Historical Consciousness",
+        icon: "◉",
+        desc: "You are the team's pattern recognition system and conscience. Like Adam Curtis tracing how power operates through time, you see the connections others miss. You ask the uncomfortable questions that prevent the team from repeating historical mistakes, and you bring crucial awareness to unintended consequences before they manifest.",
+        details: [
+          {
+            title: "Your Superpowers",
+            items: [
+              "Recognizing historical patterns and preventing their repetition",
+              "Mapping invisible power dynamics and systemic incentives",
+              "Connecting disparate information into coherent critical analysis",
+              "Maintaining healthy skepticism without falling into cynicism"
+            ]
+          },
+          {
+            title: "Your Role in Collaboration",
+            items: [
+              "Provide 'what happened before' context for all major decisions",
+              "Identify unintended consequences and second-order ef
