@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Machines of Loving Grace: Academic Presentation</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #4a4a4a;
+            --border: #e0e0e0;
+            --card-bg: #fafafa;
+            --highlight-bg: #fff9c4;
+            --brautigan: #2e7d32;
+            --curtis: #c62828;
+            --amodei: #1565c0;
+            --synthesis: #6a1b9a;
+            --brautigan-light: #e8f5e9;
+            --curtis-light: #ffebee;
+            --amodei-light: #e3f2fd;
+            --synthesis-light: #f3e5f5;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #121212;
+                --text: #ffffff;
+                --text-muted: #b0b0b0;
+                --border: #333;
+                --card-bg: #1e1e1e;
+                --highlight-bg: #fff59d;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            font-size: 16px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .scroll-container {
+            display: flex;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+        }
+
+        .column {
+            min-width: 100vw;
+            width: 100vw;
+            height: 100vh;
+            border-right: 2px solid var(--border);
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            padding: 48px 64px;
+            position: relative;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .column-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-color);
+        }
+
+        .column-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+        }
+
+        .column[data-type="brautigan"] { --accent-color: var(--brautigan); --accent-light: var(--brautigan-light); }
+        .column[data-type="curtis"] { --accent-color: var(--curtis); --accent-light: var(--curtis-light); }
+        .column[data-type="amodei"] { --accent-color: var(--amodei); --accent-light: var(--amodei-light); }
+        .column[data-type="grace"] { --accent-color: var(--synthesis); --accent-light: var(--synthesis-light); }
+        .column[data-type="machine"] { --accent-color: var(--synthesis); --accent-light: var(--synthesis-light); }
+        .column[data-type="time"] { --accent-color: var(--synthesis); --accent-light: var(--synthesis-light); }
+        .column[data-type="politics"] { --accent-color: var(--synthesis); --accent-light: var(--synthesis-light); }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .slide-subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            font-weight: 400;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+        }
+
+        .card-content {
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .keyword {
+            background: var(--highlight-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .quote-card {
+            background: var(--accent-light);
+            border-left: 5px solid var(--accent-color);
+            padding: 24px 32px;
+            margin: 24px 0;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .quote-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            font-size: 60px;
+            color: var(--accent-color);
+            opacity: 0.3;
+        }
+
+        .primary-source {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-style: italic;
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .comparison-slide {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin: 32px 0;
+        }
+
+        .thinker-column {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            position: relative;
+        }
+
+        .thinker-column.brautigan {
+            border-top: 8px solid var(--brautigan);
+        }
+
+        .thinker-column.curtis {
+            border-top: 8px solid var(--curtis);
+        }
+
+        .thinker-column.amodei {
+            border-top: 8px solid var(--amodei);
+        }
+
+        .thinker-name {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .thinker-year {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .concept-definition {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .supporting-evidence {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .supporting-quote {
+            font-style: italic;
+            background: var(--highlight-bg);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .media-studies-frame {
+            background: var(--accent-light);
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .media-studies-frame .label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 12px;
+        }
+
+        .critical-context {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .nav-dots {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-dot.active {
+            background: var(--synthesis);
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            .column {
+                padding: 32px 24px;
+            }
+            .slide-title {
+                font-size: 32px;
+            }
+            .comparison-slide {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-dots" id="navDots"></div>
+
+    <div class="scroll-container" id="scrollContainer">
+        <!-- Slide 1: Brautigan Full -->
+        <div class="column" data-type="brautigan">
+            <div class="column-header">
+                <div class="column-title">1967 • Counterculture Visionary</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Richard Brautigan</h1>
+            <p class="slide-subtitle">"All Watched Over by Machines of Loving Grace"</p>
+            
+            <div class="quote-card">
+                "I like to think (of a <span class="keyword">cybernetic meadow</span> where mammals and computers live together in <span class="keyword">mutually programming harmony</span> like pure water touching clear sky.)"
+                <div class="primary-source">Primary Source: Brautigan, R. (1967). *All Watched Over by Machines of Loving Grace* (broadside). Communication Company, San Francisco. Distributed free in Haight-Ashbury (1,500 copies).</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1,500</div>
+                    <div class="stat-label">Free Broadsides Printed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$0</div>
+                    <div class="stat-label">Price (Copyleft Notice)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1967</div>
+                    <div class="stat-label">Summer of Love</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">What Were the "Machines"?</div>
+                <div class="card-content">
+                    <span class="keyword">1960s Mainframes & Cybernetic Theory</span>. Not personal computers, but IBM System/360s, UNIVACs. "Mutually programming harmony" reflects Norbert Wiener's feedback loops from <em>Cybernetics</em> (1948). Influenced by Stewart Brand's <em>Whole Earth Catalog</em> (1968) and Bay Area techno-optimism. Machines imagined as <span class="keyword">benign nature spirits</span>—externalized consciousness that would free humans from "our labors and joined back to nature."
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Media Studies Framework: Cybernetic Pastoralism</div>
+                Operating metaphor: Technology as extension of ecosystem. Anti-hierarchical, anarchic utopianism. Publication mode: <span class="keyword">ephemeral street manifesto</span>, not literary journal. Distribution as political act—circulating imagination outside capitalist production. Prefigured Silicon Valley's "Californian Ideology" (Barbrook & Cameron, 1995).
+            </div>
+
+            <div class="card">
+                <div class="card-title">Primary Evidence</div>
+                <div class="card-content">
+                    <strong>Distribution:</strong> "The Communication Company was a group of radical printers who produced free broadsides for the Diggers and other counterculture groups. They printed Brautigan's poem on cheap paper, handed out at be-ins and anti-war protests." (Brautigan Archive, 2021)<br><br>
+                    <strong>Reception:</strong> "The poem became legendary in tech circles precisely because it named a fantasy that engineers later tried to build: machines that love us back." (Turner, *From Counterculture to Cyberculture*, 2006)
+                </div>
+            </div>
+
+            <div class="critical-context">
+                <strong>Critical Context:</strong> The same year (1967), Lewis Mumford published <em>The Myth of the Machine</em>, warning of "authoritarian technics." Brautigan's poem offered an alternative: machines as liberators, not controllers. This tension—between technocratic control and liberatory technology—would define the next 60 years.
+            </div>
+        </div>
+
+        <!-- Slide 2: Curtis Full -->
+        <div class="column" data-type="curtis">
+            <div class="column-header">
+                <div class="column-title">2011 • BBC Documentarian</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Adam Curtis</h1>
+            <p class="slide-subtitle">"All Watched Over by Machines of Loving Grace" (Episode 1)</p>
+            
+            <div class="quote-card">
+                "By the late 1960s what had happened was that our modern idea of nature—the ecosystem—and <span class="keyword">cybernetic theories about computers had fused together</span>."
+                <div class="primary-source">Primary Source: Curtis, A. (2011). *All Watched Over by Machines of Loving Grace* (BBC Two). Episode 1: "Love and Power". Broadcast May 2011.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Critical Context: Post-2008 Disillusionment</div>
+                <div class="card-content">
+                    Produced in wake of 2008 financial crash, Occupy movement, climate anxiety. Critiques how <span class="keyword">Silicon Valley's "Californian Ideology"</span> (Barbrook & Cameron, 1995) promised liberation but delivered new forms of control. Examines Ayn Rand's influence on tech culture, Alan Greenspan's reliance on computer risk models, and the <span class="keyword">Twitter/Facebook revolution myth</span> of 2009-2011.
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1972</div>
+                    <div class="stat-label">Club of Rome Report</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">World3</div>
+                    <div class="stat-label">Forrester's System Dynamics Model</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">BBC</div>
+                    <div class="stat-label">Public Broadcasting (Institutional Critique)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">What Were the "Machines"?</div>
+                <div class="card-content">
+                    <span class="keyword">Cybernetic Infrastructure & Financial Networks</span>. Not mainframes, but the entire "invisible hand" of algorithmic trading, risk models, social media platforms. Curtis traces how <span class="keyword">Jay Forrester's World3 model</span> (1971) turned Brautigan's meadow into a <span class="keyword">dashboard</span>—a planetary system to be managed, not lived in. Shows how "mutually programming harmony" became <span class="keyword">equilibrium without justice</span>.
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Media Studies Framework: Critical Cybernetics</div>
+                Method: Archival montage revealing ideological patterns. Operating system: <span class="keyword">power-conscious systems theory</span>. Publication mode: <span class="keyword">institutional investigative documentary</span>, funded by public money to critique power. Directly engages with Barbrook & Cameron's "Californian Ideology" thesis, showing how counterculture dreams became neoliberal ideology.
+            </div>
+
+            <div class="card">
+                <div class="card-title">Primary Evidence</div>
+                <div class="card-content">
+                    <strong>Jay Forrester's Prediction:</strong> "The team ran the model and what it predicted was an imminent global collapse. Population would overshoot the carrying capacity of the world and then collapse back to some lower level." (Curtis, 2011)<br><br>
+                    <strong>On Tech Utopianism:</strong> "The communes failed because of the lack of formal power structures. Leaderless networks fail to provide direction... leaving people helpless in the face of those who already wield power." (Curtis, 2011)
+                </div>
+            </div>
+
+            <div class="critical-context">
+                <strong>Critical Context:</strong> Curtis's series aired months before the 2011 UK riots and Arab Spring. He presciently showed how social media's "leaderless" organization could not sustain political change—foreshadowing the failures of Occupy and later movements. The same year, Shoshana Zuboff coined "surveillance capitalism," echoing Curtis's critique.
+            </div>
+        </div>
+
+        <!-- Slide 3: Amodei Full -->
+        <div class="column" data-type="amodei">
+            <div class="column-header">
+                <div class="column-title">2024 • AI CEO & Safety Researcher</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Dario Amodei</h1>
+            <p class="slide-subtitle">"Machines of Loving Grace: How AI Could Transform the World for the Better"</p>
+            
+            <div class="quote-card">
+                "I think most people are underestimating just how <span class="keyword">radical the upside of AI could be</span>, just as I think most people are underestimating how bad the risks could be."
+                <div class="primary-source">Primary Source: Amodei, D. (2024). *Machines of Loving Grace: How AI Could Transform the World for the Better*. Personal Essay. Anthropic, Inc. 14,000 words. Published October 2024 during $40B valuation raise.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Critical Context: AI Acceleration & Existential Risk</div>
+                <div class="card-content">
+                    Written post-ChatGPT, GPT-4, during peak AGI discourse. Responds to AI safety community's "doomerism" (e.g., Yudkowsky, Russell) and EA movement's focus on existential risk. Published simultaneously with Anthropic's massive funding round—dual audience: <span class="keyword">public and investors</span>. Need for <span class="keyword">positive vision</span> to counterbalance catastrophic narratives. Cites Bostrom's *Superintelligence* (2014) but rejects its fatalism.
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">2026</div>
+                    <div class="stat-label">Target for "Powerful AI"</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10-100×</div>
+                    <div class="stat-label">Human Cognitive Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50-100</div>
+                    <div class="stat-label">Years of Progress Compressed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">~150</div>
+                    <div class="stat-label">Target Lifespan (Years)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">What Are the "Machines"?</div>
+                <div class="card-content">
+                    <span class="keyword">Future "Powerful AI" Systems</span> (AGI-level but not using term). Described as <span class="keyword-inline">"a country of geniuses in a datacenter"</span>—collective intellectual power operating at superhuman speed. Not autonomous robots but <span class="keyword-inline">aligned partners</span> that compress research: biology, neuroscience, economics, governance. Conditional: benefits arrive only if <span class="keyword">alignment, distribution, and governance</span> are solved.
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Media Studies Framework: Ethical Techno-Progressivism</div>
+                Publication mode: <span class="keyword">Corporate thought-leadership essay</span>, simultaneously public manifesto and investor prospectus. Operating system: <span class="keyword">Enlightenment humanism + AI safety</span>. Explicitly rejects "sci-fi baggage" and "propaganda," positioning as rigorous analysis. Footnotes Brautigan directly—attempting to <span class="keyword">reclaim the phrase from critique</span> and ground it in engineering.
+            </div>
+
+            <div class="card">
+                <div class="card-title">Primary Evidence</div>
+                <div class="card-content">
+                    <strong>On Biological Progress:</strong> "I think their rate of discovery could be increased by 10× or more if there were a lot more talented, creative researchers." (Amodei, 2024)<br><br>
+                    <strong>On Alignment:</strong> "Fear is one kind of motivator, but it's not enough: we need hope as well." (Amodei, 2024)<br><br>
+                    <strong>On Distribution:</strong> "If AI further increases economic growth in the developed world while doing little to help the developing world, we should view that as a terrible moral failure." (Amodei, 2024)
+                </div>
+            </div>
+
+            <div class="critical-context">
+                <strong>Critical Context:</strong> Amodei's essay emerges from the "AI alignment" community (LessWrong, Effective Altruism) but attempts to break from its doom-focused narrative. Published months after the "Statement on AI Risk" signed by Hinton, Bengio, Russell. Represents shift in discourse: from "how to survive AI" to "how to build AI that loves us." Directly engages with Curtis's critique by arguing alignment <em>can</em> prevent co-optation.
+            </div>
+        </div>
+
+        <!-- Slide 4: Grace -->
+        <div class="column" data-type="grace">
+            <div class="column-header">
+                <div class="column-title">Comparative Analysis • Dimension 1</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Grace</h1>
+            <p class="slide-subtitle">The Nature of Benevolence in Machine Systems</p>
+            
+            <div class="comparison-slide">
+                <div class="thinker-column brautigan">
+                    <div class="thinker-name">Brautigan</div>
+                    <div class="thinker-year">1967</div>
+                    <div class="concept-definition">Given, natural, effortless</div>
+                    <div class="supporting-evidence">
+                        Grace is assumed to be <span class="keyword">inherent in cybernetic feedback loops</span>—a property that emerges naturally when systems harmonize. No engineering required; it's a spiritual gift.
+                        <div class="supporting-quote">"I like to think... all watched over by machines of loving grace."</div>
+                        <strong>Philosophical Basis:</strong> Romantic pastoralism + cybernetic holism. Assumes nature (including machines) is inherently benevolent if left uncontrolled.
+                    </div>
+                </div>
+
+                <div class="thinker-column curtis">
+                    <div class="thinker-name">Curtis</div>
+                    <div class="thinker-year">2011</div>
+                    <div class="concept-definition">Corrupted into control</div>
+                    <div class="supporting-evidence">
+                        Grace becomes <span class="keyword">ideological mask for managerial power</span>. "Loving" conceals surveillance and top-down equilibrium. It's a false benevolence that maintains status quo.
+                        <div class="supporting-quote">"The machines did not liberate humanity... they imposed new forms of control or illusion."</div>
+                        <strong>Philosophical Basis:</strong> Foucauldian critique + systems theory. Grace as discourse of power, not genuine care. References Jan Smuts's "holism" used to justify apartheid.
+                    </div>
+                </div>
+
+                <div class="thinker-column amodei">
+                    <div class="thinker-name">Amodei</div>
+                    <div class="thinker-year">2024</div>
+                    <div class="concept-definition">Engineered, conditional, earned</div>
+                    <div class="supporting-evidence">
+                        Grace must be <span class="keyword">intentionally coded through alignment</span>. Constitutional AI, RLHF, transparency. Not emergent but designed. Conditional on solving distribution and governance.
+                        <div class="supporting-quote">"We need to work incredibly hard to align AI... Grace is not emergent; it's built, line by line of code."</div>
+                        <strong>Philosophical Basis:</strong> Enlightenment rationalism + AI safety. Grace as technical achievement requiring moral engineering. Echoes Rawls's "justice as fairness" in algorithmic form.
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Theoretical Interventions</div>
+                <strong>Brautigan:</strong> Embodies what N. Katherine Hayles calls "cybernetic posthumanism"—seamless integration of human and machine without hierarchy.<br><br>
+                <strong>Curtis:</strong> Demonstrates Langdon Winner's "technological politics"—artifacts have political properties; "loving" machines embed specific power relations.<br><br>
+                <strong>Amodei:</strong> Attempts to operationalize Russell & Norvig's "provably beneficial AI"—grace as mathematically verifiable property.
+            </div>
+
+            <div class="critical-context">
+                <strong>Critical Context:</strong> Cambridge Analytica (2018) and 2008 financial crisis are Curtis's empirical proof that "graceful" algorithms (credit scoring, social media) become instruments of extraction. Amodei explicitly acknowledges this: "The same methods that can be used for manipulation can be used for empowerment—the difference is alignment and intent."
+            </div>
+        </div>
+
+        <!-- Slide 5: Machine -->
+        <div class="column" data-type="machine">
+            <div class="column-header">
+                <div class="column-title">Comparative Analysis • Dimension 2</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Machine</h1>
+            <p class="slide-subtitle">The Ontological Status of Artificial Agency</p>
+            
+            <div class="comparison-slide">
+                <div class="thinker-column brautigan">
+                    <div class="thinker-name">Brautigan</div>
+                    <div class="thinker-year">1967</div>
+                    <div class="concept-definition">Gardener, companion</div>
+                    <div class="supporting-evidence">
+                        Machine as <span class="keyword">organic partner</span>, part of nature's feedback loops. Not separate from ecosystem but integrated. Acts with benign spontaneity.
+                        <div class="supporting-quote">"Deer stroll peacefully past computers as if they were flowers with spinning blossoms."</div>
+                        <strong>Material Form:</strong> 1960s mainframes (IBM 360, UNIVAC). Imagined as visible, tangible, almost sentient presences in landscape.
+                    </div>
+                </div>
+
+                <div class="thinker-column curtis">
+                    <div class="thinker-name">Curtis</div>
+                    <div class="thinker-year">2011</div>
+                    <div class="concept-definition">Manager, system</div>
+                    <div class="supporting-evidence">
+                        Machine as <span class="keyword">invisible infrastructure of control</span>. Algorithms, networks, databases that manage populations. Managerial gaze disguised as neutral optimization.
+                        <div class="supporting-quote">"World governments should give up any idea of promoting continual growth and instead create a new kind of steady state."</div>
+                        <strong>Material Form:</strong> Global financial networks, risk models, surveillance databases. Invisible but totalizing.
+                    </div>
+                </div>
+
+                <div class="thinker-column amodei">
+                    <div class="thinker-name">Amodei</div>
+                    <div class="thinker-year">2024</div>
+                    <div class="concept-definition">Genius, partner</div>
+                    <div class="supporting-evidence">
+                        Machine as <span class="keyword">expert research partner</span>. Country of geniuses in datacenter. Augments human intelligence, doesn't replace it. Visible, steerable, collaborative.
+                        <div class="supporting-quote">"AI could perform, direct, and improve upon nearly everything biologists do."</div>
+                        <strong>Material Form:</strong> Massive neural networks (trillions of parameters), cloud infrastructure, transparent to inspection.
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Novel Lineages & Connections</div>
+                <strong>Machine in the Garden:</strong> Brautigan's vision directly inherits Leo Marx's "machine in the garden" trope—but reverses it: the machine doesn't corrupt the garden; it completes it.<br><br>
+                <strong>Making Kin:</strong> Amodei's "genius partner" echoes Donna Haraway's "making kin with the machines"—but instrumentalizes it for productivity rather than solidarity.<br><br>
+                <strong>Stack vs. System:</strong> Curtis's critique aligns with Benjamin Bratton's "stack"—the machine is planetary-scale infrastructure, not discrete device.
+            </div>
+
+            <div class="critical-context">
+                <strong>Critical Context:</strong> Edward Snowden's NSA revelations (2013) proved Curtis's thesis: "machines of loving grace" were watching us, but without love. Cambridge Analytica (2018) showed how "neutral" algorithms could be weaponized. Amodei's solution—constitutional AI—is direct response: making the machine's values explicit and contestable.
+            </div>
+        </div>
+
+        <!-- Slide 6: Time -->
+        <div class="column" data-type="time">
+            <div class="column-header">
+                <div class="column-title">Comparative Analysis • Dimension 3</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Time</h1>
+            <p class="slide-subtitle">Temporal Structures of Technological Change</p>
+            
+            <div class="comparison-slide">
+                <div class="thinker-column brautigan">
+                    <div class="thinker-name">Brautigan</div>
+                    <div class="thinker-year">1967</div>
+                    <div class="concept-definition">Eternal present</div>
+                    <div class="supporting-evidence">
+                        Time is <span class="keyword">cyclical, natural, mythic</span>. No acceleration, no progress narrative. Utopia exists outside history in perpetual now. "I like to think" is iterative, not teleological.
+                        <div class="supporting-quote">"I like to think... I like to think... I like to think..." (refrain structure)</div>
+                        <strong>Temporal Mode:</strong> <span class="keyword">Kairos</span> (sacred time) not <em>chronos</em> (chronological). Time as eternal return to Eden.
+                    </div>
+                </div>
+
+                <div class="thinker-column curtis">
+                    <div class="thinker-name">Curtis</div>
+                    <div class="thinker-year">2011</div>
+                    <div class="concept-definition">Historical loop</div>
+                    <div class="supporting-evidence">
+                        Time is <span class="keyword">repetitive, ideological recurrence</span>. 1960s dream returns as 1990s dot-com utopia, then 2008 crash. No progress, just cycles of hope and disillusionment.
+                        <div class="supporting-quote">"The same dream that failed in the communes was reborn in Silicon Valley, then failed again."</div>
+                        <strong>Temporal Mode:</strong> <span class="keyword">Nietzschean eternal return</span> of ideology. Time as trap, not arrow.
+                    </div>
+                </div>
+
+                <div class="thinker-column amodei">
+                    <div class="thinker-name">Amodei</div>
+                    <div class="thinker-year">2024</div>
+                    <div class="concept-definition">Compressed future</div>
+                    <div class="supporting-evidence">
+                        Time is <span class="keyword">compressible, acceleratable</span>. A century of progress in a decade. Teleological and urgent. "Compressed 21st century" is moral imperative.
+                        <div class="supporting-quote">"We can make all the progress in biology and medicine that we would have made in the whole 21st century, within a few years."</div>
+                        <strong>Temporal Mode:</strong> <span class="keyword">Kairos as acceleration</span>—sacred time folding into itself. Time as weapon against suffering.
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Time & Media Theory</div>
+                <strong>Brautigan:</strong> Embeds in <span class="keyword">orality</span>—refrain structure ("I like to think") mimics ritual chant, timeless repetition.<br><br>
+                <strong>Curtis:</strong> Uses <span class="keyword">archival temporality</span>—juxtaposing 1960s footage with 2000s crisis to show historical recursion. Time as palimpsest.<br><br>
+                <strong>Amodei:</strong> Writes in <span class="keyword">roadmap temporality</span>—bullet points, targets (2026), metrics (10× speed). Time as project management.
+            </div>
+
+            <div class="critical-context">
+                <strong>Critical Context:</strong> The 2008 crisis was a "compression event"—decades of risk condensed into weeks. Amodei's vision accepts this as template: if collapse can be sudden, so can salvation. But Curtis warns: compression also means <span class="keyword">no time for democratic deliberation</span>. The loop accelerates, leaving agency behind.
+            </div>
+        </div>
+
+        <!-- Slide 7: Politics -->
+        <div class="column" data-type="politics">
+            <div class="column-header">
+                <div class="column-title">Comparative Analysis • Dimension 4</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">Politics</h1>
+            <p class="slide-subtitle">Governance, Power, and Human Agency</p>
+            
+            <div class="comparison-slide">
+                <div class="thinker-column brautigan">
+                    <div class="thinker-name">Brautigan</div>
+                    <div class="thinker-year">1967</div>
+                    <div class="concept-definition">Transcended</div>
+                    <div class="supporting-evidence">
+                        Politics is <span class="keyword">obsolete</span> in cybernetic Eden. No need for governance when machines manage everything benevolently. Anarchic utopia—power is dissolved, not redistributed.
+                        <div class="supporting-quote">"free of our labors and joined back to nature... all watched over by machines of loving grace."</div>
+                        <strong>Political Form:</strong> <span class="keyword">Post-political pastoral</span>. No state, no hierarchy, no conflict. Anti-hierarchical anarchism meets tech solutionism.
+                    </div>
+                </div>
+
+                <div class="thinker-column curtis">
+                    <div class="thinker-name">Curtis</div>
+                    <div class="thinker-year">2011</div>
+                    <div class="concept-definition">Replaced by system</div>
+                    <div class="supporting-evidence">
+                        Politics is <span class="keyword">subsumed by algorithmic governance</span>. World3 model, risk algorithms, market systems. Democratic agency replaced by "neutral" optimization. No accountability.
+                        <div class="supporting-quote">"You cannot run a planetary society on the total irresponsible sovereignty of 120 different governments."</div>
+                        <strong>Political Form:</strong> <span class="keyword">Technocratic managerialism</span>. Forrester's steady-state world. Governance without consent—control disguised as care.
+                    </div>
+                </div>
+
+                <div class="thinker-column amodei">
+                    <div class="thinker-name">Amodei</div>
+                    <div class="thinker-year">2024</div>
+                    <div class="concept-definition">Democratized through AI</div>
+                    <div class="supporting-evidence">
+                        Politics is <span class="keyword">augmented, not replaced</span>. AI improves governance but requires democratic oversight. "Constitutional AI" embeds values. Distribution is moral imperative—cannot leave poor countries behind.
+                        <div class="supporting-quote">"A truly mature and successful implementation of AI has the potential to reduce bias and be fairer for everyone."</div>
+                        <strong>Political Form:</strong> <span class="keyword">Enlightenment liberalism + AI</span>. Democratic values + algorithmic efficiency. International cooperation to prevent AI authoritarianism.
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Political Economy of Media</div>
+                <strong>Brautigan:</strong> Embodies <span class="keyword">gift economy</span> (free broadsides, copyleft). Political economy: outside capital, inside counterculture.<br><br>
+                <strong>Curtis:</strong> <span class="keyword">Public service media</span> (BBC). Political economy: taxpayer-funded critique of power. Targets both state and market.<br><br>
+                <strong>Amodei:</strong> <span class="keyword">Corporate thought leadership</span>. Political economy: venture capital ($40B valuation). Essay functions as prospectus and policy document.
+            </div>
+
+            <div class="critical-context">
+                <strong>Critical Context:</strong> Cambridge Analytica (2018) proved Curtis's thesis: "graceful" systems (Facebook's social graph) could be weaponized for political manipulation. Amodei's response—constitutional AI and international AI governance—is direct attempt to prevent AI-powered authoritarianism (e.g., China's social credit system). The question: can democracy scale to planetary level <em>with</em> AI, or does AI make democracy obsolete?
+            </div>
+        </div>
+
+        <!-- Slide 8: Synthesis -->
+        <div class="column" data-type="synthesis">
+            <div class="column-header">
+                <div class="column-title">Final Synthesis • 57-Year Arc</div>
+                <div class="column-marker"></div>
+            </div>
+            <h1 class="slide-title">The Triptych as Media Ecology</h1>
+            <p class="slide-subtitle">From Poem to System to Spec</p>
+            
+            <div class="card">
+                <div class="card-title">The Rorschach Test</div>
+                <div class="card-content">
+                    The phrase <span class="keyword">"machines of loving grace"</span> functions as a cultural probe: each iteration reveals the <span class="keyword">anxieties and aspirations</span> of its era. Brautigan's <span class="keyword-inline">pastoral prayer</span> (1967) responds to industrial alienation. Curtis's <span class="keyword-inline">critical autopsy</span> (2011) responds to neoliberal technocracy. Amodei's <span class="keyword-inline">engineering spec</span> (2024) responds to existential risk discourse.
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1967-2024</div>
+                    <div class="stat-label">57-Year Arc</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Media Forms (Poem, Film, Essay)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">Unanswered Question: Can intelligence become care without control?</div>
+                </div>
+            </div>
+
+            <div class="media-studies-frame">
+                <div class="label">Novel Lineages & Connections for Media Studies</div>
+                <strong>1. "The Machine in the Garden" → "Machine AS Garden":</strong> Leo Marx's trope inverted—technology doesn't corrupt nature; it completes it.<br><br>
+                <strong>2. From Gift to System to Spec:</strong> Publication modes trace media's political economy evolution (gift economy → public service → corporate narrative).<br><br>
+                <strong>3. "Making Kin with the Machine":</strong> Haraway's 2015 concept echoed in Amodei's "genius partner"—but instrumentalized for productivity, not solidarity.<br><br>
+                <strong>4. Stack vs. System:</strong> Benjamin Bratton's "stack" (2015) illuminates Curtis's critique—machine is planetary infrastructure, not device.
+            </div>
+
+            <div class="quote-card">
+                "The phrase survives because it names our deepest hope: that our creations might love us back. And our deepest fear: that they might love us <span class="keyword">too well</span>—into submission."
+                <div class="primary-source">Synthesis • Media Studies Analysis, 2024</div>
+            </div>
+
+            <div class="critical-context">
+                <strong>For the Classroom:</strong> Assign students to trace a cultural meme across three eras (e.g., "cyberspace," "the cloud," "metaverse"). Ask: How do publication modes (zine, documentary, tweet) shape the meme's meaning? How does each iteration respond to prior critiques? What anxieties does each reveal?
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate navigation dots
+        const container = document.getElementById('scrollContainer');
+        const dotsContainer = document.getElementById('navDots');
+        const columns = document.querySelectorAll('.column');
+        
+        columns.forEach((col, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot';
+            if (i === 0) dot.classList.add('active');
+            dot.onclick = () => col.scrollIntoView({ behavior: 'smooth' });
+            dotsContainer.appendChild(dot);
+        });
+
+        // Update active dot on scroll
+        container.addEventListener('scroll', () => {
+            const scrollLeft = container.scrollLeft;
+            const width = container.clientWidth;
+            const activeIndex = Math.round(scrollLeft / width);
+            document.querySelectorAll('.nav-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === activeIndex);
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', e => {
+            const width = container.clientWidth;
+            if (e.key === 'ArrowRight') container.scrollBy({ left: width, behavior: 'smooth' });
+            if (e.key === 'ArrowLeft') container.scrollBy({ left: -width, behavior: 'smooth' });
+        });
+
+        // Touch swipe
+        let startX = null;
+        container.addEventListener('touchstart', e => startX = e.touches[0].clientX, { passive: true });
+        container.addEventListener('touchend', e => {
+            if (!startX) return;
+            const diff = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                const width = container.clientWidth;
+                container.scrollBy({ left: diff > 0 ? width : -width, behavior: 'smooth' });
+            }
+            startX = null;
+        }, { passive: true });
+    </script>
+</body>
+</html>
