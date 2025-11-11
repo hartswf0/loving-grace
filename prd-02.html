@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Watched Over by Machines of Loving Grace</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --pink: #ff006e;
+      --teal: #06a77d;
+      --orange: #f77f00;
+      --cream: #fefae0;
+      --slate: #2d3748;
+      --bg-light: #fefae0;
+      --bg-dark: #1a1a1a;
+      --text-light: #2d3748;
+      --text-dark: #fefae0;
+      --card-light: #ffffff;
+      --card-dark: #2d2d2d;
+    }
+
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --text: var(--text-dark);
+      --card: var(--card-dark);
+      --border: #444;
+    }
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --text: var(--text-light);
+      --card: var(--card-light);
+      --border: #d4c5b9;
+    }
+
+    body {
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: all 0.3s ease;
+      line-height: 1.6;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 60px;
+      height: 30px;
+      background: var(--border);
+      border-radius: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      border: 2px solid var(--text);
+    }
+
+    .theme-toggle-circle {
+      width: 24px;
+      height: 24px;
+      background: var(--text);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    [data-theme="dark"] .theme-toggle-circle {
+      transform: translateX(30px);
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: var(--card);
+      border: 3px solid var(--text);
+      padding: 40px;
+      position: relative;
+      box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 2px dashed var(--border);
+      padding-bottom: 30px;
+    }
+
+    .title-box {
+      border: 3px double var(--text);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(24px, 5vw, 42px);
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      letter-spacing: 3px;
+      margin-top: 15px;
+      opacity: 0.8;
+    }
+
+    .poem-snippet {
+      font-style: italic;
+      margin: 20px 0;
+      padding: 15px;
+      border-left: 3px solid var(--pink);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .broadcast-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 30px;
+      padding: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .phase-indicator {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .phase {
+      text-align: center;
+      padding: 15px 10px;
+      border: 2px solid var(--border);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .phase.active {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .phase.completed {
+      background: var(--teal);
+      color: white;
+      border-color: var(--teal);
+    }
+
+    .phase-num {
+      font-size: 20px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .phase-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        var(--pink),
+        var(--pink) 10px,
+        var(--orange) 10px,
+        var(--orange) 20px
+      );
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      border: 3px solid var(--text);
+      padding: 25px;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .question-card::before {
+      content: '█';
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: var(--bg);
+      padding: 0 10px;
+      font-size: 20px;
+      color: var(--pink);
+    }
+
+    .question-meta {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      color: var(--teal);
+      font-weight: bold;
+    }
+
+    .question {
+      font-size: 18px;
+      line-height: 1.6;
+      font-weight: bold;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .option {
+      padding: 18px;
+      border: 2px solid var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg);
+      position: relative;
+      font-size: 15px;
+    }
+
+    .option:hover {
+      transform: translateX(5px);
+      border-color: var(--pink);
+      box-shadow: 4px 4px 0 var(--pink);
+    }
+
+    .option.selected {
+      background: var(--pink);
+      color: white;
+      border-color: var(--pink);
+      transform: translateX(5px);
+      box-shadow: 4px 4px 0 var(--text);
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 15px;
+      border: 3px solid var(--text);
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--text);
+      color: var(--bg);
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 var(--pink);
+    }
+
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--pink);
+      border-color: var(--pink);
+      color: white;
+    }
+
+    .result {
+      text-align: center;
+    }
+
+    .result-header {
+      border: 4px double var(--text);
+      padding: 30px;
+      margin-bottom: 30px;
+      background: var(--bg);
+    }
+
+    .result-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      border: 3px solid var(--text);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: bold;
+      background: var(--card);
+    }
+
+    .result h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .result-subtitle {
+      font-size: 16px;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    .result-desc {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      text-align: left;
+      padding: 20px;
+      border-left: 4px solid var(--pink);
+      background: var(--bg);
+    }
+
+    .score-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 30px 0;
+    }
+
+    .score-item {
+      padding: 20px;
+      border: 3px solid var(--text);
+      text-align: center;
+      background: var(--bg);
+    }
+
+    .score-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .score-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: var(--pink);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .score-bar {
+      height: 8px;
+      background: var(--border);
+      margin-top: 10px;
+      overflow: hidden;
+      border: 1px solid var(--text);
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--pink),
+        var(--pink) 3px,
+        var(--orange) 3px,
+        var(--orange) 6px
+      );
+      transition: width 0.6s ease;
+    }
+
+    .role-details {
+      text-align: left;
+      margin: 30px 0;
+    }
+
+    .role-section {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 2px solid var(--text);
+      background: var(--bg);
+    }
+
+    .role-section h3 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--teal);
+      padding-bottom: 8px;
+    }
+
+    .role-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .role-section li {
+      padding: 8px 0;
+      padding-left: 20px;
+      position: relative;
+      font-size: 14px;
+    }
+
+    .role-section li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--pink);
+      font-weight: bold;
+    }
+
+    .grace-note {
+      border: 3px double var(--text);
+      padding: 25px;
+      margin: 30px 0;
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.8;
+      background: var(--bg);
+    }
+
+    .grace-note strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .phase-indicator {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .broadcast-info {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .score-breakdown {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .theme-toggle {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <div class="theme-toggle-circle">☀</div>
+  </div>
+
+  <div class="container">
+    <div id="quiz-view">
+      <div class="header">
+        <div class="title-box">
+          <h1>All Watched Over<br>by Machines of<br>Loving Grace</h1>
+          <div class="subtitle">A Grace Contract for Mutual Becoming</div>
+        </div>
+        
+        <div class="poem-snippet">
+          I like to think of a cybernetic meadow<br>
+          where mammals and computers<br>
+          live together in mutually<br>
+          programming harmony<br>
+          like pure water touching clear sky.
+        </div>
+      </div>
+
+      <div class="broadcast-info">
+        <span>📡 Transmission Active</span>
+        <span id="questionNum">Question 1/8</span>
+        <span>Richard Brautigan / 1967</span>
+      </div>
+
+      <div class="phase-indicator">
+        <div class="phase" data-phase="meadow">
+          <span class="phase-num">I</span>
+          <span class="phase-label">Meadow</span>
+        </div>
+        <div class="phase" data-phase="forest">
+          <span class="phase-num">II</span>
+          <span class="phase-label">Forest</span>
+        </div>
+        <div class="phase" data-phase="ecology">
+          <span class="phase-num">III</span>
+          <span class="phase-label">Ecology</span>
+        </div>
+        <div class="phase" data-phase="harmony">
+          <span class="phase-num">IV</span>
+          <span class="phase-label">Harmony</span>
+        </div>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      
+      <div class="question-card">
+        <div class="question-meta" id="questionMeta"></div>
+        <div class="question" id="question"></div>
+      </div>
+      
+      <div class="options" id="options"></div>
+      
+      <div class="controls">
+        <button class="btn" id="prevBtn" onclick="prevQuestion()" disabled>← Previous</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Continue →</button>
+      </div>
+    </div>
+
+    <div id="result-view" class="result hidden">
+      <div class="result-header">
+        <div class="result-icon" id="resultIcon"></div>
+        <h2 id="resultTitle"></h2>
+        <div class="result-subtitle" id="resultSubtitle"></div>
+      </div>
+      
+      <div class="result-desc" id="resultDesc"></div>
+      
+      <div class="score-breakdown" id="scoreBreakdown"></div>
+      
+      <div class="role-details" id="roleDetails"></div>
+      
+      <div class="grace-note">
+        <strong>▓▓▓ Grace Contract Acknowledged ▓▓▓</strong>
+        This is a story about the rise of the machines. How we build them reveals who we are. 
+        The Metaphor Weavers imagine the cybernetic meadow. The Memory Keepers prevent us from 
+        forgetting what happened before. The Mechanism Builders make it real. Together, watched 
+        over by machines of loving grace, we return to our mammal brothers and sisters.
+      </div>
+      
+      <button class="btn btn-primary" onclick="restart()" style="width: 100%; margin-top: 25px;">↺ Begin Again</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        phase: 'meadow',
+        meta: 'THE CYBERNETIC MEADOW',
+        q: "A new technology promises to revolutionize how we connect. Your first question:",
+        options: [
+          { text: "Does this expand the meadow where humans and machines touch like pure water touching clear sky?", role: "weaver" },
+          { text: "Which previous technological revolution does this echo, and how did that story end?", role: "keeper" },
+          { text: "What are the actual technical capabilities, and what could fail at scale?", role: "builder" }
+        ]
+      },
+      {
+        phase: 'meadow',
+        meta: 'THE CYBERNETIC MEADOW',
+        q: "You're asked to evaluate a social media platform. You focus on:",
+        options: [
+          { text: "Whether it creates space for genuine human flourishing or extracts attention", role: "weaver" },
+          { text: "How its incentive structures mirror or differ from previous media systems", role: "keeper" },
+          { text: "The algorithmic mechanisms that shape what people see and how behavior changes", role: "builder" }
+        ]
+      },
+      {
+        phase: 'forest',
+        meta: 'THE CYBERNETIC FOREST',
+        q: "A powerful AI system is being deployed. What matters most:",
+        options: [
+          { text: "That it preserves human dignity—that deer can still stroll peacefully past computers", role: "weaver" },
+          { text: "That we've learned from how automation affected workers in previous industrial shifts", role: "keeper" },
+          { text: "That the safety mechanisms are robust and the system degrades gracefully under stress", role: "builder" }
+        ]
+      },
+      {
+        phase: 'forest',
+        meta: 'THE CYBERNETIC FOREST',
+        q: "When filtering signal from noise in the information landscape, you trust:",
+        options: [
+          { text: "Your sense of what rings emotionally true versus what feels extractive or hollow", role: "weaver" },
+          { text: "Pattern recognition—spotting which narratives serve power and which reveal it", role: "keeper" },
+          { text: "Verification methods—checking sources, mechanisms, and whether claims hold up", role: "builder" }
+        ]
+      },
+      {
+        phase: 'ecology',
+        meta: 'THE CYBERNETIC ECOLOGY',
+        q: "You're building a new collaborative tool. You prioritize:",
+        options: [
+          { text: "Creating experiences that feel alive, where people are free of labor and joined back to nature", role: "weaver" },
+          { text: "Designing governance to prevent the tool from becoming another mechanism of control", role: "keeper" },
+          { text: "Engineering systems that are reliable, secure, and maintain data integrity", role: "builder" }
+        ]
+      },
+      {
+        phase: 'ecology',
+        meta: 'THE CYBERNETIC ECOLOGY',
+        q: "The team debates the project's direction. Your contribution:",
+        options: [
+          { text: "Reframe the debate through metaphor—help everyone see the forest and the flowers", role: "weaver" },
+          { text: "Share historical precedent—what happened when others faced this exact choice", role: "keeper" },
+          { text: "Map the decision tree—analyze trade-offs and cascade effects systematically", role: "builder" }
+        ]
+      },
+      {
+        phase: 'harmony',
+        meta: 'MUTUALLY PROGRAMMING HARMONY',
+        q: "True progress with technology happens when:",
+        options: [
+          { text: "Machines amplify our creativity, empathy, and capacity for connection—like flowers with spinning blossoms", role: "weaver" },
+          { text: "We break historical patterns of exploitation and build systems that resist capture", role: "keeper" },
+          { text: "We create tight feedback loops between human values and technical implementation", role: "builder" }
+        ]
+      },
+      {
+        phase: 'harmony',
+        meta: 'MUTUALLY PROGRAMMING HARMONY',
+        q: "Your deepest fear about the future:",
+        options: [
+          { text: "That we build powerful systems but lose the meadow—that computers replace rather than complement", role: "weaver" },
+          { text: "That utopian dreams of liberation become new forms of surveillance and control", role: "keeper" },
+          { text: "That technical systems fail catastrophically in ways we didn't anticipate", role: "builder" }
+        ]
+      }
+    ];
+
+    const roles = {
+      weaver: {
+        title: "The Metaphor Weaver",
+        subtitle: "Keeper of the Cybernetic Meadow",
+        icon: "✿",
+        desc: "Like Brautigan imagining mammals and computers in mutually programming harmony, you see through technical language to deeper truths about meaning and connection. You understand that the most important questions about technology are questions about how it feels to be alive, whether it expands or contracts the space for human flourishing. You are the guardian of the meadow.",
+        details: [
+          {
+            title: "Your Way of Seeing",
+            items: [
+              "You filter by emotional resonance—sensing what serves life versus extraction",
+              "You detect when efficiency narratives obscure human cost",
+              "You recognize the difference between tools that amplify and those that replace",
+              "You see technology's purpose: returning us to our mammal brothers and sisters"
+            ]
+          },
+          {
+            title: "Your Work in the World",
+            items: [
+              "You create language that helps us imagine futures worth building",
+              "You translate between human longing and technical possibility",
+              "You ensure what we build has soul, not just functionality",
+              "You keep asking 'but what is this FOR?' until the answer is real"
+            ]
+          },
+          {
+            title: "Your Gift to the Machine",
+            items: [
+              "You prevent solutions from becoming technically perfect but spiritually dead",
+              "You design for how things feel, not just how they work",
+              "You midwife new forms of being that technology makes possible",
+              "You hold space for grace even in systems of logic and code"
+            ]
+          }
+        ]
+      },
+      keeper: {
+        title: "The Memory Keeper",
+        subtitle: "Guardian Against Forgetting",
+        icon: "◉",
+        desc: "Like Curtis tracing how dreams of liberation become mechanisms of control—watching Ayn Rand's objectivism merge with cybernetics, seeing how freedom rhetoric masks new forms of power—you remember what others forget. You are the pattern recognizer, the one who asks 'haven't we been here before?' and knows what actually happened last time. You prevent the machine from repeating history's catastrophes.",
+        details: [
+          {
+            title: "Your Way of Seeing",
+            items: [
+              "You filter by recognizing structural patterns across time and systems",
+              "You spot ideological frameworks hiding in claims of neutrality",
+              "You see through the myth of unprecedented novelty to continuity",
+              "You trace how utopian rhetoric often masks familiar power dynamics"
+            ]
+          },
+          {
+            title: "Your Work in the World",
+            items: [
+              "You map how technology concentrates or distributes power",
+              "You reveal whose interests are actually being served",
+              "You identify the gap between stated values and actual outcomes",
+              "You show how today's solutions become tomorrow's problems"
+            ]
+          },
+          {
+            title: "Your Gift to the Machine",
+            items: [
+              "You design systems that resist capture and corruption over time",
+              "You build in safeguards based on how things actually fail",
+              "You anticipate unintended consequences through historical precedent",
+              "You maintain skepticism about technological determinism while building forward"
+            ]
+          }
+        ]
+      },
+      builder: {
+        title: "The Mechanism Builder",
+        subtitle: "Architect of the Possible",
+        icon: "⬢",
+        desc: "Like Amodei building AI systems that are not just powerful but provably safe—understanding that good intentions without rigorous engineering lead to disaster—you make the meadow real. You know that loving grace requires precise mechanism, that Brautigan's poetry needs plumbing, that the cybernetic ecology must actually work. You are the one who transforms vision into reality.",
+        details: [
+          {
+            title: "Your Way of Seeing",
+            items: [
+              "You filter by asking 'how does this actually work?' and 'what breaks first?'",
+              "You separate technical capability from aspirational marketing",
+              "You identify concrete mechanisms versus hand-waving abstractions",
+              "You test whether the system works at scale, under load, when stressed"
+            ]
+          },
+          {
+            title: "Your Work in the World",
+            items: [
+              "You translate values into measurable objectives and constraints",
+              "You build feedback loops between intention and outcome",
+              "You create systems that can be tested, verified, improved",
+              "You ensure alignment isn't just philosophy but engineering"
+            ]
+          },
+          {
+            title: "Your Gift to the Machine",
+            items: [
+              "You make visions real through careful, systematic implementation",
+              "You design for reliability, security, and graceful degradation",
+              "You identify and mitigate risks before deployment",
+              "You build the technical substrate for new forms of human flourishing"
+            ]
+          }
+        ]
+      }
+    };
+
+    let currentQ = 0;
+    let scores = { weaver: 0, keeper: 0, builder: 0 };
+    let answers = [];
+
+    function toggleTheme() {
+      const body = document.body;
+      const circle = document.querySelector('.theme-toggle-circle');
+      if (body.getAttribute('data-theme') === 'light') {
+        body.setAttribute('data-theme', 'dark');
+        circle.textContent = '☾';
+      } else {
+        body.setAttribute('data-theme', 'light');
+        circle.textContent = '☀';
+      }
+    }
+
+    function updatePhases() {
+      const phases = document.querySelectorAll('.phase');
+      const currentPhase = questions[currentQ].phase;
+      const phaseOrder = ['meadow', 'forest', 'ecology', 'harmony'];
+      const currentPhaseIndex = phaseOrder.indexOf(currentPhase);
+      
+      phases.forEach((phase, index) => {
+        phase.classList.remove('active', 'completed');
+        if (index < currentPhaseIndex) {
+          phase.classList.add('completed');
+        } else if (index === currentPhaseIndex) {
+          phase.classList.add('active');
+        }
+      });
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      document.getElementById('questionNum').textContent = `Question ${currentQ + 1}/8`;
+      document.getElementById('questionMeta').textContent = q.meta;
+      document.getElementById('question').textContent = q.q;
+      
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      
+      q.options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        if (answers[currentQ] === i) {
+          div.classList.add('selected');
+        }
+        
+        div.textContent = opt.text;
+        div.onclick = () => selectOption(i);
+        optionsDiv.appendChild(div);
+      });
+      
+      const progress = ((currentQ + 1) / questions.length) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      
+      updatePhases();
+      updateButtons();
+    }
+
+    function updateButtons() {
+      document.getElementById('prevBtn').disabled = currentQ === 0;
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.disabled = answers[currentQ] === undefined;
+      
+      if (currentQ === questions.length - 1 && answers[currentQ] !== undefined) {
+        nextBtn.textContent = 'See Grace Contract →';
+      } else {
+        nextBtn.textContent = 'Continue →';
+      }
+    }
+
+    function selectOption(optIndex) {
+      const q = questions[currentQ];
+      const prevAnswer = answers[currentQ];
+      
+      if (prevAnswer !== undefined) {
+        const prevRole = q.options[prevAnswer].role;
+        scores[prevRole]--;
+      }
+      
+      answers[currentQ] = optIndex;
+      const role = q.options[optIndex].role;
+      scores[role]++;
+      
+      renderQuestion();
+    }
+
+    function nextQuestion() {
+      if (answers[currentQ] !== undefined) {
+        if (currentQ < questions.length - 1) {
+          currentQ++;
+          renderQuestion();
+        } else {
+          showResult();
+        }
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQ > 0) {
+        currentQ--;
+        renderQuestion();
+      }
+    }
+
+    function showResult() {
+      const total = questions.length;
+      const maxScore = Math.max(scores.weaver, scores.keeper, scores.builder);
+      let resultRole;
+      
+      if (scores.weaver === maxScore) resultRole = 'weaver';
+      else if (scores.keeper === maxScore) resultRole = 'keeper';
+      else resultRole = 'builder';
+      
+      const role = roles[resultRole];
+      
+      document.getElementById('resultIcon').textContent = role.icon;
+      document.getElementById('resultTitle').textContent = role.title;
+      document.getElementById('resultSubtitle').textContent = role.subtitle;
+      document.getElementById('resultDesc').textContent = role.desc;
+      
+      const scoreBreakdown = document.getElementById('scoreBreakdown');
+      scoreBreakdown.innerHTML = '';
+      
+      Object.keys(roles).forEach(key => {
+        const percentage = Math.round((scores[key] / total) * 100);
+        const item = document.createElement('div');
+        item.className = 'score-item';
+        item.innerHTML = `
+          <div class="score-label">${roles[key].title}</div>
+          <div class="score-value">${percentage}%</div>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: ${percentage}%"></div>
+          </div>
+        `;
+        scoreBreakdown.appendChild(item);
+      });
+      
+      const roleDetails = document.getElementById('roleDetails');
+      roleDetails.innerHTML = '';
+      
+      role.details.forEach(section => {
+        const div = document.createElement('div');
+        div.className = 'role-section';
+        div.innerHTML = `
+          <h3>${section.title}</h3>
+          <ul>
+            ${section.items.map(item => `<li>${item}</li>`).join('')}
+          </ul>
+        `;
+        roleDetails.appendChild(div);
+      });
+      
+      document.getElementById('quiz-view').classList.add('hidden');
+      document.getElementById('result-view').classList.remove('hidden');
+    }
+
+    function restart() {
+      currentQ = 0;
+      scores = { weaver: 0, keeper: 0, builder: 0 };
+      answers = [];
+      
+      document.getElementById('quiz-view').classList.remove('hidden');
+      document.getElementById('result-view').classList.add('hidden');
+      
+      renderQuestion();
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
